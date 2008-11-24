@@ -1,4 +1,4 @@
-import java.util.Map;
+
 
 
 public class Commands
@@ -39,13 +39,13 @@ public class Commands
 		int times=Integer.parseInt(words[2]);
 		for(int i=0;i<times;i++)
 		{
-			sim.getRobot(index).act();
+			sim.getRobot(index-1).act();
 		}
 	}
 	private void cmdGet(String[] words)
 	{
 		int index=Integer.parseInt(words[1]);
-		Position pos=sim.getRobot(index).getCurrentPosition();
-		System.out.printf("robot %d is at %d %d\n",index,pos.x,pos.y);
+		Position pos=sim.getRobot(index-1).getCurrentPosition();
+		System.out.printf("robot %d is at %d,%d\n",index,pos.x,pos.y);
 	}
 }

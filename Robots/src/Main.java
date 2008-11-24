@@ -9,13 +9,13 @@ public class Main {
 	public static void main(String[] args) 
 	{
 		String input;
+		Simulation sim=new Simulation();
+		Commands com=new Commands(sim);
 		try 
 		{
 			input = readLine();
 			while(input!="exit")
 			{
-				Simulation sim=new Simulation();
-				Commands com=new Commands(sim);
 				com.runCommand(input);
 				input=readLine();
 			}
