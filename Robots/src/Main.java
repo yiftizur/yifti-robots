@@ -12,13 +12,14 @@ public class Main {
 		try 
 		{
 			input = readLine();
-			while(input!="bye")
+			while(input!="exit")
 			{
 				Simulation sim=new Simulation();
 				Commands com=new Commands(sim);
 				com.runCommand(input);
 				input=readLine();
 			}
+			System.out.println("bye");
 		} catch (IOException e) 
 		{
 			// TODO Auto-generated catch block
@@ -31,9 +32,9 @@ public class Main {
 		int ch=0;
 		StringBuilder string = new StringBuilder();
 		ch = System.in.read();
-		while(ch!=(13) && ch!=10)
+		while(ch!=10)
 		{
-			string.append((char)ch);
+			if(ch!=13) string.append((char)ch);
 			ch=System.in.read();
 		}
 		return string.toString();

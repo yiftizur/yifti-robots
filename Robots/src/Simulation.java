@@ -1,34 +1,24 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 public class Simulation
 {
 	private ArrayList<Robot> robarray;
+	private HashMap<String, Robot> robarray2;
 	public Simulation()
 	{
 		robarray=new ArrayList<Robot>();
-	}
-	public Simulation(Robot rob)
-	{
-		robarray=new ArrayList<Robot>();
-		robarray.add(rob);
-	}
-	public Simulation(ArrayList<Robot> arr)
-	{
-		robarray=new ArrayList<Robot>();
-		for(int i=0;i<arr.size();i++)
-		{
-			robarray.add(arr.get(i));
-		}
+		robarray2=new HashMap<String, Robot>();
 	}
 	public Robot getRobot(int index)
 	{
-		if(!robarray.isEmpty()) return (Robot) robarray.get(index);
+		if(!robarray.isEmpty()) return robarray.get(index);
 		else return null;		
 	}
 	public Robot getRobot(String name)
 	{
-		Iterator<Robot> it=robarray.iterator();
-		
+		if(!robarray2.isEmpty()) return robarray2.get(name);
+		else return null;
 	}
 	public int addRobot(Robot rob)
 	{

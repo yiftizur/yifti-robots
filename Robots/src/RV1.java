@@ -1,5 +1,5 @@
 
-public class RV1 implements Robot,Comparable 
+public class RV1 implements Robot,Comparable<Robot> 
 {
 	// starting and current positions
 	private Position start,current; 
@@ -16,10 +16,19 @@ public class RV1 implements Robot,Comparable
 		speed=0;
 		heading=0;
 	}
+	public RV1(int x, int y)
+	{
+		start=new Position(x,y);
+		current=new Position(x,y);
+		speed=0;
+		heading=0;
+	}
 	public void setStartingPosition(Position p)
 	{
 		start.x=p.x;
 		start.y=p.y;
+		current.x=p.x;
+		current.y=p.y;
 	}
 	public void setName(String t_name)
 	{
@@ -54,8 +63,8 @@ public class RV1 implements Robot,Comparable
 	{
 		return this.name;
 	}
-	public int compareTo(Object arg0) 
+	public int compareTo(Robot rob) 
 	{
-		return name.compareTo(((Robot)arg0).getName());
+		return name.compareTo(rob.getName());
 	}
 }

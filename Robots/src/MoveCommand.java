@@ -23,7 +23,7 @@ public class MoveCommand implements Command
 			int heading=Integer.parseInt(scn.match().group(3));
 
 			// do the required action
-			sim.getRobot(name).move(speed, heading);
+			//sim.getRobot(name).move(speed, heading);
 
 			return true;// correct format
 		}
