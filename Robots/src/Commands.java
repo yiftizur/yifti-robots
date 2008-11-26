@@ -1,51 +1,85 @@
-
+import java.util.HashMap;
+import java.util.Scanner;
 
 
 public class Commands
 {
 	private Simulation sim;
+	private HashMap<String,Command> commandsMap;
 	RobotFactory fact = new RobotFactory();
 	public Commands(Simulation s)
 	{
-		sim=s;
+		this.sim=s;
+		commandsMap=new HashMap<String, Command>();
+		add(new MoveCommand());
+	}
+	private void add(Command c)
+	{
+		 commandsMap.put(c.getKey(), c);
 	}
 	public void runCommand(String cmd)
 	{
-		String words[]=cmd.split(" ");// splits the command into single words
-		if(words[0].equalsIgnoreCase("move")) cmdMove(words);
-		else if(words[0].equalsIgnoreCase("init")) cmdInit(words);
-		else if(words[0].equalsIgnoreCase("simulate")) cmdSim(words);
-		else if(words[0].equalsIgnoreCase("get")) cmdGet(words);
-		else System.out.println("Error: command not found.");
+		Scanner scn=new Scanner(cmd);
+		((Command)commandsMap.get(scn.next())).execute(cmd);
 	}
-	private void cmdMove(String[] words)
+	public class MoveCommand implements Command
 	{
-		int index,speed,heading;
-		index=Integer.parseInt(words[1]);// get the robot's index
-		speed=Integer.parseInt(words[3]);// get the speed
-		heading=Integer.parseInt(words[5]);// get the heading
-		sim.getRobot(index-1).move(speed, heading);
-	}
-	private void cmdInit(String[] words)
-	{
-		Position pos=new Position(words[4],words[5]);
-		int index=sim.addRobot(fact.createRobot(words[2]));
-		sim.getRobot(index).setStartingPosition(pos);
-		System.out.printf("new %s at %d,%d indexed %d\n",words[2],pos.x,pos.y,index+1);
-	}
-	private void cmdSim(String[] words)
-	{
-		int index=Integer.parseInt(words[1]);
-		int times=Integer.parseInt(words[2]);
-		for(int i=0;i<times;i++)
-		{
-			sim.getRobot(index-1).act();
+		String format="Move (\\w+) speed (\\d+) heading (\\d+)";
+
+		// return the first word of the command as the key
+		public String getKey()
+		{ 
+			return "Move";
 		}
+
+		public boolean execute(String cmd)
+		{
+			if(cmd.matches(format)){// if the command we got fits the correct format
+				Scanner scn=new Scanner(cmd);
+				scn.findInLine(format);// scans according to the format
+
+				// get the variables
+				String name=scn.match().group(1);
+				int speed=Integer.parseInt(scn.match().group(2));
+				int heading=Integer.parseInt(scn.match().group(3));
+
+				// do the required action
+				sim.getRobot(name).move(speed, heading);
+
+				return true;// correct format
+			}
+			return false;// wrong format
+		}
+
 	}
-	private void cmdGet(String[] words)
+	public class InitCommand implements Command
 	{
-		int index=Integer.parseInt(words[1]);
-		Position pos=sim.getRobot(index-1).getCurrentPosition();
-		System.out.printf("robot %d is at %d,%d\n",index,pos.x,pos.y);
+		String format="Init type (\\w+) at (\\d+) (\\d+) named (\\w+)";
+
+		// return the first word of the command as the key
+		public String getKey()
+		{ 
+			return "Init";
+		}
+
+		public boolean execute(String cmd)
+		{
+			if(cmd.matches(format)){// if the command we got fits the correct format
+				Scanner scn=new Scanner(cmd);
+				scn.findInLine(format);// scans according to the format
+
+				// get the variables
+				String type=scn.match().group(1);
+				Position pos=new Position(scn.match().group(2),scn.match().group(3));
+				String name=scn.match().group(4);
+				// do the required action
+				sim.addRobot(fact.createRobot(type));
+				sim.getRobot(name).setStartingPosition(pos);
+				System.out.printf("new %s at %d,%d named %s",type,pos.x,pos.y,name);
+				return true;// correct format
+			}
+			return false;// wrong format
+		}
+
 	}
 }
