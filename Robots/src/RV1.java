@@ -1,5 +1,5 @@
 
-public class RV1 implements Robot,Comparable<Robot> 
+public class RV1 extends RobotSuper implements Comparable<Robot> 
 {
 	// starting and current positions
 	private Position start,current; 
