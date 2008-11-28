@@ -1,28 +1,42 @@
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 public class Simulation
 {
-	private ArrayList<Robot> robarray;
-	private HashMap<String, Robot> robarray2;
+	// Hashmap holding name and robot as pairs.
+	private HashMap<String, Robot> nameMap;
+	
+	/**
+	 * Default Constructor for simulation class.
+	 *  
+	 */
 	public Simulation()
 	{
-		robarray=new ArrayList<Robot>();
-		robarray2=new HashMap<String, Robot>();
+		nameMap=new HashMap<String, Robot>();
 	}
-	public Robot getRobot(int index)
-	{
-		if(!robarray.isEmpty()) return robarray.get(index);
-		else return null;		
-	}
+
+	/**
+	 * Method: getRobot
+	 * Returns: Robot
+	 * @param name
+	 * @return
+	 * Description: Returns robot by name from hashmap.
+	 */
+	
 	public Robot getRobot(String name)
 	{
-		if(!robarray2.isEmpty()) return robarray2.get(name);
+		if(!nameMap.isEmpty()) return nameMap.get(name);
 		else return null;
 	}
-	public int addRobot(Robot rob)
+	
+	/**
+	 * Method: addRobot
+	 * Returns: void
+	 * @param rob
+	 * @return
+	 * Description: Adds provided Robot to Hashmap by name.
+	 */
+	
+	public void addRobot(Robot rob)
 	{
-		robarray.add(rob);
-		return robarray.indexOf(rob);		
+		nameMap.put(rob.getName(),rob);		
 	}
 }
