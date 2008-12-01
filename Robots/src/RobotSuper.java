@@ -1,7 +1,5 @@
-import java.util.Comparator;
 
-
-public class RobotSuper implements Robot, Comparable<Robot>, Comparator<Robot>
+public class RobotSuper implements Robot
 {
 	private Position start,current; 
 	private int speed,heading;
@@ -67,12 +65,6 @@ public class RobotSuper implements Robot, Comparable<Robot>, Comparator<Robot>
 	public int compareTo(Robot rob) 
 	{
 		return name.compareTo(rob.getName());
-	}
-	public int compare(Robot rob1, Robot rob2)
-	{
-		if(rob1.getDistance()>rob2.getDistance()) return -1;
-		if(rob1.getDistance()<rob2.getDistance()) return 1;
-		else return 0;
 	}
 	public double getDistance()
 	{

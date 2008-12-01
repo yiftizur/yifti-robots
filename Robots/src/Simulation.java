@@ -1,9 +1,12 @@
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 public class Simulation
 {
 	// Hashmap holding name and robot as pairs.
 	private HashMap<String, Robot> nameMap;
-	
+	public ArrayList<Robot> robList;
 	/**
 	 * Default Constructor for simulation class.
 	 *  
@@ -11,6 +14,7 @@ public class Simulation
 	public Simulation()
 	{
 		nameMap=new HashMap<String, Robot>();
+		robList=new ArrayList<Robot>();
 	}
 
 	/**
@@ -37,6 +41,12 @@ public class Simulation
 	
 	public void addRobot(Robot rob)
 	{
-		nameMap.put(rob.getName(),rob);		
+		nameMap.put(rob.getName(),rob);
+		robList.add(rob);
+	}
+	
+	public Collection<Robot> getNameMap()
+	{
+		return nameMap.values();
 	}
 }
