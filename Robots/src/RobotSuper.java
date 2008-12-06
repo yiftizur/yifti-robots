@@ -62,14 +62,15 @@ public class RobotSuper implements Robot
 		this.speed=speed;
 		this.heading+=heading;
 		if(headingLimit>0)
-			if(Math.abs(heading-this.heading)>headingLimit) this.heading+=headingLimit;
+			if(Math.abs(heading)>headingLimit) this.heading+=headingLimit;
 		if(speedLimit>0)
 		{
 			if(Math.abs(speed)>speedLimit)
 			{
-				if(speed<0) this.speed=-(speedLimit);
+				if(speed<0) this.speed=-speedLimit;
 				else this.speed=speedLimit;
 			}
+			else this.speed=speed;
 		}
 	}
 	/* (non-Javadoc)
