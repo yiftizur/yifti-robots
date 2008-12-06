@@ -1,6 +1,7 @@
-import java.util.Comparator;
-
-
+/**
+ * Robot interface.
+ * Contains all basic robot methods for implementation by different robots.
+ **/
 public interface Robot extends Comparable<Robot>
 {
 	public void setStartingPosition(Position p);

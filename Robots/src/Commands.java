@@ -28,6 +28,7 @@ public class Commands
 	public Commands(Simulation s)
 	{
 		this.sim=s;
+		// Initialize the hashmap, with all command classes.
 		commandsMap=new HashMap<String, Command>(10);
 		add(new MoveCommand());
 		add(new GetCommand());
@@ -108,8 +109,8 @@ public class Commands
 
 	}
 	/**
-	 * @author Administrator
-	 *
+	 * InitCommand class
+	 * Implementation of the Command interface for Init commands.
 	 */
 	public class InitCommand implements Command
 	{
@@ -133,6 +134,7 @@ public class Commands
 				String name=scn.match().group(4);
 				// do the required action
 				Robot rob=fact.createRobot(type);
+				// If the provided type is valid.
 				if(rob!=null)
 				{
 					rob.setName(name);
@@ -140,6 +142,7 @@ public class Commands
 					sim.addRobot(rob);
 					System.out.printf("new %s at %d,%d named %s\n",type,pos.x,pos.y,name);
 				}
+				// If the provided robot type is invalid.
 				else System.out.println("Error: no such robot type");
 				return true;// correct format
 			}
@@ -147,8 +150,8 @@ public class Commands
 		}
 	}
 	/**
-	 * @author Administrator
-	 *
+	 * GetCommand class
+	 * Implementation of the Command interface for Get commands.
 	 */
 	public class GetCommand implements Command
 	{
@@ -170,17 +173,25 @@ public class Commands
 				String name=scn.match().group(1);
 				// do the required action
 				Robot rob=sim.getRobot(name);
+				// If the provided type is valid.
 				if(rob!=null)
 				{
 					Position pos=rob.getCurrentPosition();
 					System.out.printf("robot %s is at %d,%d\n",name,pos.x,pos.y);
 				}
+				// If the provided robot type is invalid.
 				else System.out.println("Error: no such robot with this name.");
 				return true;// correct format
 			}
 			return false;// wrong format
 		}
 	}
+	
+	/**
+	 * SimCommand class
+	 * Implementation of the Command interface for Simulate commands.
+	 */
+	
 	public class SimCommand implements Command
 	{
 		String format="Simulate (\\w+) (\\d+) steps";
@@ -207,11 +218,18 @@ public class Commands
 			return false;// wrong format
 		}		
 	}
+	
+	/**
+	 * DistanceComparator class
+	 * Implementation of the Comparator interface for Comparing robot distances.
+	 */
+	
 	private class DistanceComparator implements Comparator<Robot>
 	{
-
+		// Implementation of the compare function.
 		public int compare(Robot rob1, Robot rob2)
 		{
+			// Return result according to comparison in distances.
 			if (rob1.getDistance() > rob2.getDistance())
 				return 1;
 			if (rob1.getDistance() < rob2.getDistance())
@@ -220,6 +238,12 @@ public class Commands
 				return 0;
 		}
 	}
+	
+	/**
+	 * ListCommand class
+	 * Implementation of the Command interface for List commands.
+	 */
+	
 	public class ListCommand implements Command
 	{
 
@@ -239,26 +263,35 @@ public class Commands
 				// get the variables
 				String type=scn.match().group(1);
 				// do the required action
+				// If list type is distance.
 				if(type.equalsIgnoreCase("distance"))
 				{
+					// Sort the Arraylist in simulation by distance.
 					Collections.sort(sim.robList, new DistanceComparator());
 					Iterator<Robot> it=sim.robList.iterator();
+					// Go over list with iterator.
 					while (it.hasNext())
 					{
+						// Calculate and print distance for each robot in list.
 						Robot robot=it.next();
 						double distance=robot.getDistance();
 						int index=sim.robList.indexOf(robot);
 						System.out.format("%d. %s distance %.0f\n",index+1,robot.getName(),distance);
 					}
 				}
+				// If list type is name.
 				else if(type.equalsIgnoreCase("name"))
 				{
+					// Create new ArrayList from Simulation hashmap values.
 					ArrayList<Robot> roblist=new ArrayList<Robot>();
 					roblist.addAll(sim.getNameMap());
+					// Sort list with implemented comparable.
 					Collections.sort(roblist);
 					Iterator<Robot> it=roblist.iterator();
+					// Go over list with iterator.
 					while (it.hasNext())
 					{
+						// Get and print robot's name.
 						Robot robot=it.next();
 						int index=roblist.indexOf(robot);
 						System.out.printf("%d. %s\n",index+1,robot.getName());
@@ -270,6 +303,11 @@ public class Commands
 			return false;// wrong format
 		}
 	}
+	
+	/**
+	 * FileCommand class
+	 * Implementation of the Command interface for File commands.
+	 */
 	
 	public class FileCommand implements Command
 	{
@@ -284,9 +322,12 @@ public class Commands
 		{
 			if(cmd.matches(format))// if the command we got fits the correct format
 			{
+				// Get list of files from curremt dir.
 				File[] names=fl.listFiles();
+				// Go over list of files.
 				for(int i=0;i<names.length;i++)
 				{
+					// Print d for dir, f for file.
 					if(names[i].isDirectory()) System.out.printf("\t[d] %s\n",names[i].getName());
 					else System.out.printf("\t[f] %s\n",names[i].getName());
 				}
@@ -295,6 +336,12 @@ public class Commands
 			return false;
 		}
 	}
+	
+	/**
+	 * LoadCommand class
+	 * Implementation of the Command interface for Load commands.
+	 */
+	
 	public class LoadCommand implements Command
 	{
 		String format="Load (\\S+)";
@@ -312,17 +359,22 @@ public class Commands
 				// get the variables
 				String filename=scn.match().group(1);
 				String line;
+				// Try statement for buffer reading.
 				try
 				{
-					BufferedReader br=new BufferedReader(new FileReader(filename));
+					// Create new buffer reader.
+					BufferedReader br=new BufferedReader(
+							new FileReader(filename));
+					// Read lines from file while not EOF.
 					while((line=br.readLine())!=null)
 					{
+						// Print read line, and run it as command.
 						System.out.printf(">> %s\n",line);
 						runCommand(line);
 					}
 				} catch (FileNotFoundException e)
 				{
-					// TODO Auto-generated catch block
+					// Catch File not found exceptions.
 					System.out.print("Error: file not found.\n");
 				}
 				return true;

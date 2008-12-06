@@ -46,6 +46,11 @@ public class Simulation
 		robList.add(rob);
 	}
 	
+	/**
+	 * Method: getNameMap
+	 * Returns: Collection<Robot>
+	 * Description: Return all values of the names hashmap.
+	 */
 	public Collection<Robot> getNameMap()
 	{
 		return nameMap.values();
