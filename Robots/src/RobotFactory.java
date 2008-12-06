@@ -44,6 +44,7 @@ public class RobotFactory
 
 	public Robot createRobot(String type)
 	{
-		return ((RobotFac) robotFactory.get(type)).create();
+		if(robotFactory.get(type)==null) return null;
+		else return ((RobotFac) robotFactory.get(type)).create();
 	}
 }

@@ -1,6 +1,8 @@
-import java.io.FileNotFoundException;
+/*
+ * Student Name: Yiftach Tzur
+ * I.D.: 043372523
+ */
 import java.io.IOException;
-
 
 public class Main {
 
@@ -22,7 +24,7 @@ public class Main {
 			// Read line from user.
 			input = readLine();
 			// While input is not exit.
-			while(input!="exit")
+			while(!input.equals("Exit"))
 			{
 				// Run given input as command.
 				com.runCommand(input);

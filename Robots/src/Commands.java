@@ -4,8 +4,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Scanner;
@@ -21,8 +21,9 @@ public class Commands
 	RobotFactory fact = new RobotFactory();
 	File fl=new File(".");
 	/**
-	 * @param s Constructor
-	 * Description: 
+	 * Commands Constructor
+	 * Description: Constructs the commands object with the provided simulation
+	 * Adds all command factory classes into hashmap for execute command. 
 	 */
 	public Commands(Simulation s)
 	{
@@ -53,6 +54,8 @@ public class Commands
 	 * Description:
 	 * @throws IOException 
 	 * @throws FileNotFoundException 
+	 * @throws IOException 
+	 * @throws FileNotFoundException 
 	 */
 	public void runCommand(String cmd) throws FileNotFoundException, IOException
 	{
@@ -60,7 +63,7 @@ public class Commands
 		String firstword=scn.next();
 		if(commandsMap.get(firstword)!=null)
 		{
-			((Command)commandsMap.get(firstword)).execute(cmd);
+			(commandsMap.get(firstword)).execute(cmd);
 		}
 		else System.out.println("Error: command not found.");
 	}
@@ -91,11 +94,14 @@ public class Commands
 				String name=scn.match().group(1);
 				int speed=Integer.parseInt(scn.match().group(2));
 				int heading=Integer.parseInt(scn.match().group(3));
-
-				// do the required action
-				sim.getRobot(name).move(speed, heading);
-
-				return true;// correct format
+				Robot rob=sim.getRobot(name);
+				if(rob!=null)
+				{
+					// do the required action
+					sim.getRobot(name).move(speed, heading);
+					return true;// correct format
+				}
+				else System.out.println("Error: no such robot with this name.");
 			}
 			return false;// wrong format
 		}
@@ -182,7 +188,7 @@ public class Commands
 		// return the first word of the command as the key
 		public String getKey()
 		{ 
-			return "List";
+			return "Simulate";
 		}
 		public boolean execute(String cmd)
 		{
@@ -200,6 +206,19 @@ public class Commands
 			}			
 			return false;// wrong format
 		}		
+	}
+	private class DistanceComparator implements Comparator<Robot>
+	{
+
+		public int compare(Robot rob1, Robot rob2)
+		{
+			if (rob1.getDistance() > rob2.getDistance())
+				return 1;
+			if (rob1.getDistance() < rob2.getDistance())
+				return -1;
+			else
+				return 0;
+		}
 	}
 	public class ListCommand implements Command
 	{
@@ -226,10 +245,10 @@ public class Commands
 					Iterator<Robot> it=sim.robList.iterator();
 					while (it.hasNext())
 					{
-						Robot robot=(Robot) it.next();
-						Double distance=robot.getDistance();
+						Robot robot=it.next();
+						double distance=robot.getDistance();
 						int index=sim.robList.indexOf(robot);
-						System.out.printf("%d. %s distance %lf\n",index,robot.getName(),distance);
+						System.out.format("%d. %s distance %.0f\n",index+1,robot.getName(),distance);
 					}
 				}
 				else if(type.equalsIgnoreCase("name"))
@@ -240,9 +259,9 @@ public class Commands
 					Iterator<Robot> it=roblist.iterator();
 					while (it.hasNext())
 					{
-						Robot robot=(Robot) it.next();
+						Robot robot=it.next();
 						int index=roblist.indexOf(robot);
-						System.out.printf("%d. %s\n",index,robot.getName());
+						System.out.printf("%d. %s\n",index+1,robot.getName());
 					}
 				}
 				else return false;// wrong format
@@ -289,27 +308,23 @@ public class Commands
 			if(cmd.matches(format))// if the command we got fits the correct format
 			{
 				Scanner scn=new Scanner(cmd);
-				boolean found=false;
 				scn.findInLine(format);// scans according to the format
 				// get the variables
 				String filename=scn.match().group(1);
-				File[] names=fl.listFiles();
-				for(int i=0;i<names.length;i++)
+				String line;
+				try
 				{
-					if(names[i].getName().equals(filename))
+					BufferedReader br=new BufferedReader(new FileReader(filename));
+					while((line=br.readLine())!=null)
 					{
-						found=true;
-						String line;
-						BufferedReader br=new BufferedReader(new FileReader(names[i]));
-						while((line=br.readLine())!=null)
-						{
-							System.out.printf(">> %s",line);
-							runCommand(line);
-						}
-						i=names.length;
+						System.out.printf(">> %s\n",line);
+						runCommand(line);
 					}
+				} catch (FileNotFoundException e)
+				{
+					// TODO Auto-generated catch block
+					System.out.print("Error: file not found.\n");
 				}
-				if(found==false) System.out.print("Error: file not found.");
 				return true;
 			}
 			return false;

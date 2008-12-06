@@ -41,6 +41,7 @@ public class Simulation
 	
 	public void addRobot(Robot rob)
 	{
+		// Adding provided robot object to both ArrayList & Hashmap.
 		nameMap.put(rob.getName(),rob);
 		robList.add(rob);
 	}

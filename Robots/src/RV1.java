@@ -1,5 +1,5 @@
 
-public class RV1 extends RobotSuper implements Comparable<Robot> 
+public class RV1 extends RobotSuper 
 {
 	/**
 	 * RV1 Constructor
