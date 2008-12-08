@@ -75,7 +75,7 @@ public class RobotSuper implements Robot
 		// Check provided heading is under limits.
 		if(headingLimit>0)
 		{
-			if((Math.abs(heading))>headingLimit)
+			if((Math.abs(heading-this.heading))>headingLimit)
 			{
 				if(heading<0) this.heading-=headingLimit;
 				else this.heading+=headingLimit;
@@ -127,19 +127,19 @@ public class RobotSuper implements Robot
 	public void act()
 	{
 		// Calculate and set new robot coordinates,
-		double deg=Math.toRadians(GetDeg(heading));
-		current.x=(int) (current.x+(speed*(Math.cos(deg))));
-		current.y=(int) (current.y+(speed*(Math.sin(deg))));
+		double deg=GetDeg(heading);
+		current.x+=Math.round((float)((speed*(Math.cos(deg)))));
+		current.y+=Math.round((float)((speed*(Math.sin(deg)))));
 	}
 	/**
 	 * Method: GetDeg
-	 * Returns: int
+	 * Returns: double.
 	 * Description: Returns provided robot direction converted into real angles.
 	 */
-	private int GetDeg(int heading)
+	private double GetDeg(int heading)
 	{
 		
-		return (90-heading);
+		return Math.toRadians(90-heading);
 	}
 
 	/**
