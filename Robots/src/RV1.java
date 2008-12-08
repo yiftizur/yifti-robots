@@ -7,8 +7,8 @@ public class RV1 extends RobotSuper
 	 */
 	public RV1()
 	{
-		this.headingLimit=20;
-		this.speedLimit=10;
+		super.headingLimit=20;
+		super.speedLimit=10;
 	}
 	
 	/**
@@ -18,7 +18,7 @@ public class RV1 extends RobotSuper
 	public RV1(int x,int y)
 	{
 		super(x,y);
-		this.headingLimit=20;
-		this.speedLimit=10;
+		super.headingLimit=20;
+		super.speedLimit=10;
 	}
 }

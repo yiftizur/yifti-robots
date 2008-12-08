@@ -7,7 +7,7 @@ public class RV2 extends RobotSuper
 	 */
 	public RV2()
 	{
-		this.headingLimit=40;
-		this.speedLimit=20;
+		super.headingLimit=40;
+		super.speedLimit=20;
 	}
 }

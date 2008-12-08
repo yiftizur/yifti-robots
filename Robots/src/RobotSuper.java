@@ -77,10 +77,10 @@ public class RobotSuper implements Robot
 		{
 			if((Math.abs(heading-this.heading))>headingLimit)
 			{
-				if(heading<0) this.heading-=headingLimit;
+				if(heading<this.heading) this.heading-=headingLimit;
 				else this.heading+=headingLimit;
 			}
-			else this.heading+=heading;
+			else this.heading=heading;
 		}
 		else this.heading=heading;
 		// Check provided speed is under limits.

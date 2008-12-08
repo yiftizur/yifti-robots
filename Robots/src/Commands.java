@@ -64,7 +64,8 @@ public class Commands
 		String firstword=scn.next();
 		if(commandsMap.get(firstword)!=null)
 		{
-			(commandsMap.get(firstword)).execute(cmd);
+			if((commandsMap.get(firstword)).execute(cmd));
+			else System.out.println("Error: command not found.");
 		}
 		else System.out.println("Error: command not found.");
 	}
@@ -103,6 +104,7 @@ public class Commands
 					return true;// correct format
 				}
 				else System.out.println("Error: no such robot with this name.");
+				return true;
 			}
 			return false;// wrong format
 		}
@@ -143,7 +145,7 @@ public class Commands
 					System.out.printf("new %s at %d,%d named %s\n",type,pos.x,pos.y,name);
 				}
 				// If the provided robot type is invalid.
-				else System.out.println("Error: no such robot type");
+				else System.out.println("Error: no such robot type.");
 				return true;// correct format
 			}
 			return false;// wrong format

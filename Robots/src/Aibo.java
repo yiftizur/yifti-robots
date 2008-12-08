@@ -7,7 +7,7 @@ public class Aibo extends RobotSuper
 	 */
 	public Aibo() 
 	{
-		this.speedLimit=50;
+		super.speedLimit=50;
 	}
 	/**
 	 * Aibo Constructor
@@ -16,7 +16,7 @@ public class Aibo extends RobotSuper
 	public Aibo(int x,int y)
 	{
 		super(x,y);
-		this.speedLimit=50;
+		super.speedLimit=50;
 	}
 		
 }
