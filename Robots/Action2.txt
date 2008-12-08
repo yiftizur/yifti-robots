@@ -1,0 +1,64 @@
+Init type Aibo at 10 -10 named kishta
+Init type RV1 at 0 0 named harvey
+Init type RV2 at 10 0 named harvey2
+Move kishta speed 20 heading 0
+Move harvey speed -20 heading 0
+Move harvey1 speed 20 heading 0
+Move harvey2 speed 20 heading 0
+Simulate kishta 2 steps
+Simulate harvey 5 steps
+Simulate harvey2 4 steps
+Get kishta position
+Get harvey position
+Get harvey2 position
+List robots by name
+List robots by distance
+List robots by whatever
+Init type R2D2 at 11 11 named r2d2
+get kishta position
+get Lishta position
+Init type Aibo at 0 -15 named mizi
+Move mizi speed 70 heading 110
+Simulate mizi 3 steps
+Get mizi position
+Move mizi speed -30 heading 0
+Simulate mizi 3 steps
+Get mizi position
+Move mizi speed -80 heading 10
+Simulate mizi 3 steps
+Get mizi position
+Move harvey2 speed -30 heading 30
+Simulate harvey2 2 steps
+Get harvey2 position
+Move harvey2 speed -30 heading 70
+Simulate harvey2 2 steps
+Get harvey2 position
+Move harvey2 speed 40 heading 0
+Simulate harvey2 2 steps
+Get harvey2 position
+Move harvey speed -20 heading 20
+Simulate harvey 2 steps
+Get harvey position
+Move harvey speed 0 heading 30
+Simulate harvey 2 steps
+Get harvey position
+Move harvey speed 40 heading -10
+Simulate harvey 2 steps
+Get harvey position
+Init type R2D2 at 11 11 name none
+List robot by name
+list robots by name
+List robots by name
+List robots by distance
+Init type RV1 at 2 -2 named moshe
+Move moshe speed 20 heading 20
+Simulate moshe 2 steps
+Get moshe position
+Move moshe speed -10 heading -10
+Simulate moshe 2 steps
+Get moshe position
+Move moshe speed 20 heading -40
+Simulate moshe 2 steps
+Get moshe position
+List robots by name
+List robots by distance

@@ -114,7 +114,7 @@ public class Commands
 	 */
 	public class InitCommand implements Command
 	{
-		String format="Init type (\\w+) at (\\d+) (\\d+) named (\\w+)";
+		String format="Init type (\\w+) at (-?\\d+) (-?\\d+) named (\\w+)";
 
 		// return the first word of the command as the key
 		public String getKey()
@@ -297,7 +297,7 @@ public class Commands
 						System.out.printf("%d. %s\n",index+1,robot.getName());
 					}
 				}
-				else return false;// wrong format
+				else System.out.println("Error: command not found.");// wrong format
 				return true;// correct format
 			}
 			return false;// wrong format

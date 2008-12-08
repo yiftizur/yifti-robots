@@ -74,18 +74,26 @@ public class RobotSuper implements Robot
 	{
 		// Check provided heading is under limits.
 		if(headingLimit>0)
-			if(Math.abs(heading)>headingLimit) this.heading+=headingLimit;
+		{
+			if((Math.abs(heading))>headingLimit)
+			{
+				if(heading<0) this.heading-=headingLimit;
+				else this.heading+=headingLimit;
+			}
 			else this.heading+=heading;
+		}
+		else this.heading=heading;
 		// Check provided speed is under limits.
 		if(speedLimit>0)
 		{
 			if(Math.abs(speed)>speedLimit)
 			{
-				if(speed<0) this.speed=-speedLimit;
+				if(speed<0) this.speed=(-1)*(speedLimit);
 				else this.speed=speedLimit;
 			}
 			else this.speed=speed;
 		}
+		else this.speed=speed;
 	}
 
 	/**
@@ -120,8 +128,8 @@ public class RobotSuper implements Robot
 	{
 		// Calculate and set new robot coordinates,
 		double deg=Math.toRadians(GetDeg(heading));
-		current.x=(int) (current.x+(speed*Math.cos(deg)));
-		current.y=(int) (current.y+(speed*Math.sin(deg)));
+		current.x=(int) (current.x+(speed*(Math.cos(deg))));
+		current.y=(int) (current.y+(speed*(Math.sin(deg))));
 	}
 	/**
 	 * Method: GetDeg
@@ -130,7 +138,8 @@ public class RobotSuper implements Robot
 	 */
 	private int GetDeg(int heading)
 	{
-		return (90-heading)%360;
+		
+		return (90-heading);
 	}
 
 	/**
