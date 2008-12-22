@@ -1,14 +1,14 @@
 public class SmartRobot implements Robot
 {
-	protected RobotSuper rob;
+	protected Robot rob;
 	private int sHeading;
 	/**
 	 * @param robby Constructor
 	 * Description: 
 	 */
-	public SmartRobot(RobotSuper robby)
+	public SmartRobot(Robot rob)
 	{
-		rob=robby;
+		this.rob=rob;
 		sHeading=0;
 	}
 	public int compareTo(Robot r)
@@ -65,5 +65,15 @@ public class SmartRobot implements Robot
 	public int getSHeading()
 	{
 		return sHeading;
+	}
+	@Override
+	public int getHeading()
+	{
+		return rob.getHeading();
+	}
+	@Override
+	public int getSpeed() 
+	{
+		return rob.getSpeed();
 	}	
 }

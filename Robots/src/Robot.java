@@ -13,4 +13,6 @@ public interface Robot extends Comparable<Robot>
 	public void setName(String str);
 	public double getDistance();
 	public int compareTo(Robot r);
+	public int getSpeed();
+	public int getHeading();
 }
