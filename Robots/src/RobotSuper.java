@@ -23,8 +23,6 @@ public class RobotSuper implements Robot
 	{
 		start=new Position(0,0);
 		current=new Position(0,0);
-		speed=0;
-		heading=0;
 	}
 	/**
 	 * RobotSuper Constructor
@@ -34,8 +32,6 @@ public class RobotSuper implements Robot
 	{
 		start=new Position(x,y);
 		current=new Position(x,y);
-		speed=0;
-		heading=0;
 	}
 
 	/**
@@ -75,25 +71,25 @@ public class RobotSuper implements Robot
 		// Check provided heading is under limits.
 		if(headingLimit>0)
 		{
-			if((Math.abs(heading-this.heading))>headingLimit)
+			if((Math.abs(heading-this.getHeading()))>headingLimit)
 			{
-				if(heading<this.heading) this.heading-=headingLimit;
-				else this.heading+=headingLimit;
+				if(heading<this.getHeading()) this.heading=this.getHeading() - headingLimit;
+				else this.heading=(this.getHeading() + headingLimit);
 			}
-			else this.heading=heading;
+			else this.heading=(heading);
 		}
-		else this.heading=heading;
+		else this.heading=(heading);
 		// Check provided speed is under limits.
 		if(speedLimit>0)
 		{
 			if(Math.abs(speed)>speedLimit)
 			{
-				if(speed<0) this.speed=(-1)*(speedLimit);
-				else this.speed=speedLimit;
+				if(speed<0) this.speed=((-1)*(speedLimit));
+				else this.speed=(speedLimit);
 			}
-			else this.speed=speed;
+			else this.speed=(speed);
 		}
-		else this.speed=speed;
+		else this.speed=(speed);
 	}
 
 	/**
@@ -104,7 +100,7 @@ public class RobotSuper implements Robot
 	
 	public void stop() 
 	{
-		speed=0;
+		this.speed=0;
 	}
 	
 	/**
@@ -142,6 +138,20 @@ public class RobotSuper implements Robot
 		return Math.toRadians(90-heading);
 	}
 
+	/**
+	 * @return the speed
+	 */
+	public int getSpeed()
+	{
+		return speed;
+	}
+	/**
+	 * @return the heading
+	 */
+	public int getHeading()
+	{
+		return heading;
+	}
 	/**
 	 * Method: getName
 	 * Returns: String
