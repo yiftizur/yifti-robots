@@ -3,6 +3,7 @@ public class Box
 {
 	private String name;
 	private Position location;
+	public boolean isPicked;
 	/**
 	 *  Constructor
 	 * Description: 
@@ -10,12 +11,13 @@ public class Box
 	public Box(String bname)
 	{
 		this.setName(bname);
+		isPicked=false;
 	}
 	public void SetPosition(Position pos)
 	{
 		location=pos;
 	}
-	public Position GetLocation()
+	public Position getPosition()
 	{
 		return location;
 	}

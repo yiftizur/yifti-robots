@@ -188,4 +188,20 @@ public class RobotSuper implements Robot
 		// Calculate distance moved.
 		return (Math.sqrt(Math.pow(distX, 2)+Math.pow(distY, 2)));
 	}
+	/* (non-Javadoc)
+	 * @see Robot#pickupBox()
+	 */
+	@Override
+	public boolean pickupBox(Box b)
+	{
+		return false;
+	}
+	/* (non-Javadoc)
+	 * @see Robot#putdownBox()
+	 */
+	@Override
+	public boolean putdownBox()
+	{
+		return false;
+	}
 }

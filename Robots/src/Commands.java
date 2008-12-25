@@ -15,6 +15,8 @@ public class Commands
 {
 	// The simulation object for calling and manipulating robots.
 	private Simulation sim;
+	// The Boxes object for calling and manipulating boxes.
+	private Boxes boxes;
 	// Hashmap for holding command name,command pairs.
 	private HashMap<String,Command> commandsMap;
 	// Robot factory object for creating robots by string.
@@ -25,9 +27,10 @@ public class Commands
 	 * Description: Constructs the commands object with the provided simulation
 	 * Adds all command factory classes into hashmap for execute command. 
 	 */
-	public Commands(Simulation s)
+	public Commands(Simulation s,Boxes b)
 	{
 		this.sim=s;
+		this.boxes=b;
 		// Initialize the hashmap, with all command classes.
 		commandsMap=new HashMap<String, Command>(10);
 		add(new MoveCommand());
@@ -37,6 +40,7 @@ public class Commands
 		add(new ListCommand());
 		add(new FileCommand());
 		add(new LoadCommand());
+		add(new putBoxCommand());
 	}
 	/**
 	 * Method: add
@@ -117,7 +121,7 @@ public class Commands
 	public class InitCommand implements Command
 	{
 		String format="Init type (\\w+) at (-?\\d+) (-?\\d+) named (\\w+)";
-
+		String formatwith="Init type (\\w+) at (-?\\d+) (-?\\d+) named (\\w+) with (\\w+)";
 		// return the first word of the command as the key
 		public String getKey()
 		{ 
@@ -126,7 +130,49 @@ public class Commands
 		// Execute command from string.
 		public boolean execute(String cmd)
 		{
-			if(cmd.matches(format)){// if the command we got fits the correct format
+			if(cmd.matches(formatwith))
+			{
+				Scanner scn=new Scanner(cmd);
+				scn.findInLine(format);// scans according to the format
+
+				// get the variables
+				String type=scn.match().group(1);
+				Position pos=new Position(scn.match().group(2),scn.match().group(3));
+				String name=scn.match().group(4);
+				String addition=scn.match().group(5);
+				// do the required action
+				Robot rob=fact.createRobot(type);
+				if(rob!=null)
+				{
+					rob.setName(name);
+					rob.setStartingPosition(pos);
+					if(addition.equals("arm"))
+					{
+						ArmAddition robby=new ArmAddition(rob);
+						sim.addRobot(robby);
+						System.out.printf("new Robot with %s of %s at %d,%d named %s\n",addition,type,pos.x,pos.y,name);
+					}
+					else if(addition.equals("smartKit"))
+					{
+						SmartRobot robby=new SmartRobot(rob);
+						sim.addRobot(robby);
+						System.out.printf("new Smart Robot of %s at %d,%d named %s\n",type,pos.x,pos.y,name);
+					}
+					else if(addition.equals("all"))
+					{
+						ArmAddition robby=new ArmAddition(new SmartRobot(rob));
+						sim.addRobot(robby);
+						System.out.printf("new Robot with arm os SmartRobot of %s at %d,%d named %s\n",type,pos.x,pos.y,name);
+					}
+					else System.out.println("Error: no such addition.");
+					return true;// correct format
+				}
+				// If the provided robot type is invalid.
+				else System.out.println("Error: no such robot type.");
+				return true;// correct format
+			}
+			else if(cmd.matches(format))
+			{// if the command we got fits the correct format
 				Scanner scn=new Scanner(cmd);
 				scn.findInLine(format);// scans according to the format
 
@@ -175,14 +221,20 @@ public class Commands
 				String name=scn.match().group(1);
 				// do the required action
 				Robot rob=sim.getRobot(name);
+				Box box=boxes.getBox(name);
 				// If the provided type is valid.
 				if(rob!=null)
 				{
 					Position pos=rob.getCurrentPosition();
 					System.out.printf("robot %s is at %d,%d\n",name,pos.x,pos.y);
 				}
+				else if(box!=null)
+				{
+					Position pos=box.getPosition();
+					System.out.printf("box %s is at %d,%d\n",name,pos.x,pos.y);
+				}
 				// If the provided robot type is invalid.
-				else System.out.println("Error: no such robot with this name.");
+				else System.out.println("Error: no such robot or box with this name.");
 				return true;// correct format
 			}
 			return false;// wrong format
@@ -383,5 +435,39 @@ public class Commands
 			}
 			return false;
 		}
+	}
+	public class putBoxCommand implements Command
+	{
+		String format="PutBox at (-?\\d+) (-?\\d+) named (\\w+)";
+		/* (non-Javadoc)
+		 * @see Command#execute(java.lang.String)
+		 */
+		@Override
+		public boolean execute(String cmd)
+		{
+			if(cmd.matches(format)){// if the command we got fits the correct format
+				Scanner scn=new Scanner(cmd);
+				scn.findInLine(format);// scans according to the format
+				// get the variables
+				Position pos=new Position(scn.match().group(1),scn.match().group(2));
+				String name=scn.match().group(3);
+				// do the required action
+				Box box=new Box(name);
+				boxes.AddBox(box);
+				box.SetPosition(pos);
+				return true;// correct format
+			}
+			return false;// wrong format
+		}
+
+		/* (non-Javadoc)
+		 * @see Command#getKey()
+		 */
+		@Override
+		public String getKey()
+		{
+			return "PutBox";
+		}
+		
 	}
 }

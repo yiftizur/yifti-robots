@@ -75,5 +75,21 @@ public class SmartRobot implements Robot
 	public int getSpeed() 
 	{
 		return rob.getSpeed();
+	}
+	/* (non-Javadoc)
+	 * @see Robot#pickupBox(Box)
+	 */
+	@Override
+	public boolean pickupBox(Box b)
+	{
+		return rob.pickupBox(b);
+	}
+	/* (non-Javadoc)
+	 * @see Robot#putdownBox()
+	 */
+	@Override
+	public boolean putdownBox()
+	{
+		return rob.putdownBox();
 	}	
 }

@@ -15,4 +15,6 @@ public interface Robot extends Comparable<Robot>
 	public int compareTo(Robot r);
 	public int getSpeed();
 	public int getHeading();
+	public boolean pickupBox(Box b);
+	public boolean putdownBox();
 }
