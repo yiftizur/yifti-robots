@@ -16,8 +16,10 @@ public class Main {
 		String input;
 		// Robots simulation object.
 		Simulation sim=new Simulation();
+		Boxes boxes=new Boxes();
+		Programs programs=new Programs();
 		// Robots command object.
-		Commands com=new Commands(sim);
+		Commands com=new Commands(sim, boxes, programs);
 		// Try statement.
 		try 
 		{

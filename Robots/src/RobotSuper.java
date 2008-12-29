@@ -1,3 +1,5 @@
+import java.io.File;
+
 
 /**
  * Class: RobotSuper.
@@ -14,7 +16,15 @@ public class RobotSuper implements Robot
 	protected int headingLimit=0;
 	// Robot name.
 	protected String name;
+	protected File program;
 	
+	/**
+	 * @return the program
+	 */
+	public File getProgram()
+	{
+		return program;
+	}
 	/**
 	 * RobotSuper Constructor
 	 * Description: Constructs a RobotSuper object with default values. 
@@ -203,5 +213,9 @@ public class RobotSuper implements Robot
 	public boolean putdownBox()
 	{
 		return false;
+	}
+	public void SetProgram(String filename)
+	{
+		program=new File(filename);
 	}
 }

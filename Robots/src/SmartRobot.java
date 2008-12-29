@@ -1,7 +1,10 @@
+import java.io.File;
+
 public class SmartRobot implements Robot
 {
 	protected Robot rob;
 	private int sHeading;
+	protected File program;
 	/**
 	 * @param robby Constructor
 	 * Description: 
@@ -91,5 +94,21 @@ public class SmartRobot implements Robot
 	public boolean putdownBox()
 	{
 		return rob.putdownBox();
+	}
+	/* (non-Javadoc)
+	 * @see Robot#SetProgram(java.lang.String)
+	 */
+	@Override
+	public void SetProgram(String filename)
+	{
+		program=new File(filename);
+	}
+	/* (non-Javadoc)
+	 * @see Robot#getProgram()
+	 */
+	@Override
+	public File getProgram()
+	{
+		return program;
 	}	
 }

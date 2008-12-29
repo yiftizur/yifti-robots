@@ -54,4 +54,8 @@ public class Simulation
 	{
 		return nameMap.values();
 	}
+	public int GetSize()
+	{
+		return robList.size();
+	}
 }

@@ -17,8 +17,10 @@ public class Commands
 	private Simulation sim;
 	// The Boxes object for calling and manipulating boxes.
 	private Boxes boxes;
+	private Programs progs;
 	// Hashmap for holding command name,command pairs.
 	private HashMap<String,Command> commandsMap;
+	private HashMap<String,String> messageMap;
 	// Robot factory object for creating robots by string.
 	RobotFactory fact = new RobotFactory();
 	File fl=new File(".");
@@ -27,13 +29,13 @@ public class Commands
 	 * Description: Constructs the commands object with the provided simulation
 	 * Adds all command factory classes into hashmap for execute command. 
 	 */
-	public Commands(Simulation s,Boxes b)
+	public Commands(Simulation s,Boxes b,Programs progs)
 	{
 		this.sim=s;
 		this.boxes=b;
+		this.progs=progs;
 		// Initialize the hashmap, with all command classes.
-		commandsMap=new HashMap<String, Command>(10);
-		add(new MoveCommand());
+		commandsMap=new HashMap<String, Command>();
 		add(new GetCommand());
 		add(new InitCommand());
 		add(new SimCommand());
@@ -41,6 +43,11 @@ public class Commands
 		add(new FileCommand());
 		add(new LoadCommand());
 		add(new putBoxCommand());
+		add(new AssignCommand());
+		messageMap=new HashMap<String, String>();
+		messageMap.put("arm", "new Robot with arm of");
+		messageMap.put("smartkit", "new Smart Robot of");
+		messageMap.put("all", "new Robot with arm of SmartRobot of");
 	}
 	/**
 	 * Method: add
@@ -51,6 +58,25 @@ public class Commands
 	private void add(Command c)
 	{
 		 commandsMap.put(c.getKey(), c);
+	}
+	private void MakeRob(String type,Robot rob)
+	{
+		if(type.equals("arm"))
+		{
+			ArmAddition robby=new ArmAddition(rob);
+			sim.addRobot(robby);
+		}
+		else if(type.equals("smartKit"))
+		{
+			SmartRobot robby=new SmartRobot(rob);
+			sim.addRobot(robby);
+		}
+		else if(type.equals("all"))
+		{
+			ArmAddition robby=new ArmAddition(new SmartRobot(rob));
+			sim.addRobot(robby);
+		}
+		else System.out.println("Error: no such addition.");
 	}
 	/**
 	 * Method: runCommand
@@ -74,47 +100,6 @@ public class Commands
 		else System.out.println("Error: command not found.");
 	}
 	/**
-	 * MoveCommand class
-	 * Implementation of the Command interface for Move commands.
-	 */
-	public class MoveCommand implements Command
-	{
-		String format="Move (\\w+) speed (-?\\d+) heading (-?\\d+)";
-
-		// return the first word of the command as the key
-		public String getKey()
-		{ 
-			return "Move";
-		}
-
-		// Execute method from interface.
-		public boolean execute(String cmd)
-		{
-			// if the command we got fits the correct format
-			if(cmd.matches(format))
-			{
-				Scanner scn=new Scanner(cmd);
-				scn.findInLine(format);// scans according to the format
-
-				// get the variables
-				String name=scn.match().group(1);
-				int speed=Integer.parseInt(scn.match().group(2));
-				int heading=Integer.parseInt(scn.match().group(3));
-				Robot rob=sim.getRobot(name);
-				if(rob!=null)
-				{
-					// do the required action
-					sim.getRobot(name).move(speed, heading);
-					return true;// correct format
-				}
-				else System.out.println("Error: no such robot with this name.");
-				return true;
-			}
-			return false;// wrong format
-		}
-
-	}
-	/**
 	 * InitCommand class
 	 * Implementation of the Command interface for Init commands.
 	 */
@@ -133,7 +118,7 @@ public class Commands
 			if(cmd.matches(formatwith))
 			{
 				Scanner scn=new Scanner(cmd);
-				scn.findInLine(format);// scans according to the format
+				scn.findInLine(formatwith);// scans according to the format
 
 				// get the variables
 				String type=scn.match().group(1);
@@ -146,25 +131,9 @@ public class Commands
 				{
 					rob.setName(name);
 					rob.setStartingPosition(pos);
-					if(addition.equals("arm"))
-					{
-						ArmAddition robby=new ArmAddition(rob);
-						sim.addRobot(robby);
-						System.out.printf("new Robot with %s of %s at %d,%d named %s\n",addition,type,pos.x,pos.y,name);
-					}
-					else if(addition.equals("smartKit"))
-					{
-						SmartRobot robby=new SmartRobot(rob);
-						sim.addRobot(robby);
-						System.out.printf("new Smart Robot of %s at %d,%d named %s\n",type,pos.x,pos.y,name);
-					}
-					else if(addition.equals("all"))
-					{
-						ArmAddition robby=new ArmAddition(new SmartRobot(rob));
-						sim.addRobot(robby);
-						System.out.printf("new Robot with arm os SmartRobot of %s at %d,%d named %s\n",type,pos.x,pos.y,name);
-					}
-					else System.out.println("Error: no such addition.");
+					MakeRob(addition, rob);
+					System.out.printf("%s %s at %d,%d named %s\n",
+							messageMap.get(addition),type,pos.x,pos.y,name);
 					return true;// correct format
 				}
 				// If the provided robot type is invalid.
@@ -248,7 +217,7 @@ public class Commands
 	
 	public class SimCommand implements Command
 	{
-		String format="Simulate (\\w+) (\\d+) steps";
+		String format="Simulate (\\d+) seconds";
 
 		// return the first word of the command as the key
 		public String getKey()
@@ -262,11 +231,16 @@ public class Commands
 				Scanner scn=new Scanner(cmd);
 				scn.findInLine(format);// scans according to the format
 				// get the variables
-				String name=scn.match().group(1);
-				int steps=Integer.parseInt(scn.match().group(2));
+				int seconds=Integer.parseInt(scn.match().group(1));
+				try
+				{
+					progs.RunAll(seconds);
+				} catch (InterruptedException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				// do the required action
-				for(int i=0;i<steps;i++)
-					sim.getRobot(name).act();
 				return true;// correct format
 			}			
 			return false;// wrong format
@@ -453,8 +427,8 @@ public class Commands
 				String name=scn.match().group(3);
 				// do the required action
 				Box box=new Box(name);
-				boxes.AddBox(box);
 				box.SetPosition(pos);
+				boxes.AddBox(box);				
 				return true;// correct format
 			}
 			return false;// wrong format
@@ -469,5 +443,45 @@ public class Commands
 			return "PutBox";
 		}
 		
+	}
+	public class AssignCommand implements Command
+	{
+		String format="Assign (\\w+) with (\\S+)";
+		public String getKey()
+		{
+			return "Assign";
+		}
+		/* (non-Javadoc)
+		 * @see Command#execute(java.lang.String)
+		 */
+		public boolean execute(String cmd) throws FileNotFoundException
+		{
+			if(cmd.matches(format)){// if the command we got fits the correct format
+				Scanner scn=new Scanner(cmd);
+				scn.findInLine(format);// scans according to the format
+				// get the variables
+				String name=scn.match().group(1);
+				String filename=scn.match().group(2);
+				File fl=new File(filename);
+				if(!fl.exists())
+					System.out.print("Error: file not found.\n");
+				else
+				{
+					Robot rob=sim.getRobot(name);
+					if(rob!=null)
+					{
+						if(rob.getProgram()==null)
+						{
+							rob.SetProgram(filename);
+							progs.addProgram(new RunProgram(rob,boxes));
+						}
+						else System.out.println("another program is assigned to this robot.");
+					}
+					else System.out.println("Error: no such robot with this name.");
+				}
+				return true;// correct format
+			}
+			return false;// wrong format
+		}
 	}
 }

@@ -29,7 +29,7 @@ public class SmartRobotTest extends TestCase
 	public void testMove()
 	{
 		// Test above limit speed and negative heading.
-		rob.move(20, -30);
+		rob.move(20,-30);
 		// Make sure robot follows speed limitations.
 		assertEquals(10,rob.rob.getSpeed());
 		// Make sure Smart Robot Decorator saves Positive heading.
@@ -49,7 +49,11 @@ public class SmartRobotTest extends TestCase
 	@Test
 	public void testAct()
 	{
-		fail("Not yet implemented");
+		rob.setStartingPosition(pos);
+		rob.move(30,340);
+		rob.act();
+		pos=new Position(-3,9);
+		assertEquals(pos.toString(), rob.getCurrentPosition().toString());
 	}
 
 }

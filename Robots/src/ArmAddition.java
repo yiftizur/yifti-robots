@@ -1,8 +1,14 @@
+import java.io.File;
 
+/**
+ * ArmAddition Class
+ * A Decorator class for a Robot with an Arm.
+ */
 public class ArmAddition implements Robot
 {
 	protected Robot rob;
 	private Box myBox;
+	protected File program;
 	public ArmAddition(Robot robby) 
 	{
 		rob=robby;
@@ -75,7 +81,7 @@ public class ArmAddition implements Robot
 	{
 		if(b.getPosition().compareTo((this.getCurrentPosition()))==0)
 		{
-			if(!b.isPicked && myBox==null)
+			if(!b.isPicked && myBox==null && rob.getSpeed()==0)
 			{
 				myBox=b;
 				b.isPicked=true;
@@ -87,12 +93,28 @@ public class ArmAddition implements Robot
 	}
 	public boolean putdownBox()
 	{
-		if(myBox!=null)
+		if(myBox!=null && rob.getSpeed()==0)
 		{
 			myBox.isPicked=false;
 			myBox=null;
 			return true;
 		}
 		return false;
+	}
+	/* (non-Javadoc)
+	 * @see Robot#SetProgram(java.lang.String)
+	 */
+	@Override
+	public void SetProgram(String filename)
+	{
+		program=new File(filename);
+	}
+	/* (non-Javadoc)
+	 * @see Robot#getProgram()
+	 */
+	@Override
+	public File getProgram()
+	{
+		return program;
 	}
 }

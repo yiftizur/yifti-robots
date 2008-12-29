@@ -1,3 +1,5 @@
+import java.io.File;
+
 /**
  * Robot interface.
  * Contains all basic robot methods for implementation by different robots.
@@ -17,4 +19,6 @@ public interface Robot extends Comparable<Robot>
 	public int getHeading();
 	public boolean pickupBox(Box b);
 	public boolean putdownBox();
+	public void SetProgram(String filename);
+	public File getProgram();
 }
