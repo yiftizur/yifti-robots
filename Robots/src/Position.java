@@ -40,6 +40,11 @@ public class Position implements Comparable<Position>
 		if((this.x==o.x) && (this.y==o.y)) return 0;
 		else return 1;
 	}
+	public int equals(Position o)
+	{
+		if((this.x==o.x) && (this.y==o.y)) return 0;
+		else return 1;
+	}
 	public String toString()
 	{
 		return String.format("%d,%d",x,y);

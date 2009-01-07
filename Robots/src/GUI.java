@@ -370,5 +370,6 @@ public class GUI {
 	    }
 	    display.dispose();
 	    timer.cancel();
+	    programs.shutDown();
 	}
 }

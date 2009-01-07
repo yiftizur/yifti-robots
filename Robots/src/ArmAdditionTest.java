@@ -21,7 +21,7 @@ public class ArmAdditionTest extends TestCase
 	}
 	@Test
 	/**
-	 * testMove - Test the move method of SmartRobot.
+	 * testMove - Test the move method of ArmAddition robot.
 	 * Test that the headings are updated in the Robot according to the
 	 * shortest way to go.
 	 */
@@ -41,5 +41,9 @@ public class ArmAdditionTest extends TestCase
 		assertEquals(10,rob.getSpeed());
 		// Make sure the shortest way is chosen for the underline Robot.
 		assertEquals(-20,rob.getHeading());
+	}
+	public void testAct()
+	{
+		
 	}
 }

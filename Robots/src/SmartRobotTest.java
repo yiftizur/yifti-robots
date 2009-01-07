@@ -49,11 +49,29 @@ public class SmartRobotTest extends TestCase
 	@Test
 	public void testAct()
 	{
+		// Move robot back to starting point.
 		rob.setStartingPosition(pos);
-		rob.move(30,340);
+		// Setup robot direction.
+		rob.move(10,40);
+		// Make sure robot followed heading limitation.
+		rob.move(10,40);
+		// Turn robot more than limitation.
+		rob.move(10, -20);
+		// Move robot one step.
 		rob.act();
-		pos=new Position(-3,9);
-		assertEquals(pos.toString(), rob.getCurrentPosition().toString());
+		// Verify robot took one step in correct direction.
+		assertEquals("3,9", rob.getCurrentPosition().toString());
+		// Move robot several steps.
+		rob.act();
+		// Verify Robot adjusts direction with each movement.
+		assertEquals("3,19", rob.getCurrentPosition().toString());
+		rob.act();
+		// Verify Robot adjusts direction with each movement.
+		assertEquals("0,28", rob.getCurrentPosition().toString());
+		rob.act();
+		// Verify Robot adjusts direction with each movement.
+		assertEquals("-3,37", rob.getCurrentPosition().toString());
+				
 	}
 
 }
