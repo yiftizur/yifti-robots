@@ -27,7 +27,8 @@ import org.eclipse.swt.widgets.Text;
 public class GUI {	
 	private static List robots,files;
 	private static Canvas canvas;
-
+	static boolean simIsRunning=false;
+	
 	private static void initLists(Group g, final Commands com){
 		// headlines:
 		new Label(g,SWT.NONE).setText("Robots List");
@@ -46,31 +47,30 @@ public class GUI {
 		b.addSelectionListener(new SelectionListener(){
 			public void widgetSelected(SelectionEvent event)
 			{
-				StringBuilder cmd=new StringBuilder();
-				int index=robots.getSelectionIndex();
-				String name = null;
-				if(index>=0) name=robots.getItem(index);
-				String prog=files.getItem(files.getSelectionIndex());
-				cmd.append(String.format("Assign %s with %s",name,prog));
-				try
-				{
-					if(name!=null && prog!=null)
-					{
-						com.runCommand(cmd.toString());
-						if(robots.getItem(index).matches("(\\w+)"))
-						{
-							robots.remove(name);
-							robots.add(name+" " +prog);
+				if (!simIsRunning) {
+					StringBuilder cmd = new StringBuilder();
+					int index = robots.getSelectionIndex();
+					String name = null;
+					if (index >= 0)
+						name = robots.getItem(index);
+					String prog = files.getItem(files.getSelectionIndex());
+					cmd.append(String.format("Assign %s with %s", name, prog));
+					try {
+						if (name != null && prog != null) {
+							com.runCommand(cmd.toString());
+							if (robots.getItem(index).matches("(\\w+)")) {
+								robots.remove(name);
+								robots.add(name + " " + prog);
+							} else
+								ErrorPrint
+										.PrintError("another program is assigned to this robot.");
 						}
-						else ErrorPrint.PrintError("another program is assigned to this robot.");
+					} catch (FileNotFoundException e) {
+						System.out.print("Error: file not found.\n");
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
-				} catch (FileNotFoundException e)
-				{
-					System.out.print("Error: file not found.\n");
-				} catch (IOException e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				}
 					
 			}
@@ -123,38 +123,47 @@ public class GUI {
 			public void widgetDefaultSelected(SelectionEvent arg0){}
 			public void widgetSelected(SelectionEvent arg0)
 			{
-				String add=null;
-				StringBuilder cmd=new StringBuilder();
-				cmd.append(String.format("Init type %s at 10 10 named %s",
-						comb.getText(),robName.getText()));
-				if(armButton.getSelection() && smartButton.getSelection())
-					add="all";
-				else if(armButton.getSelection())
-					add="arm";
-				else if(armButton.getSelection())
-					add="smartKit";
-				if(add!=null) cmd.append(String.format(" with %s",add));
-				try
+				if (!simIsRunning) 
 				{
-					if(robName.getText()!="" && sim.getRobot(robName.getText())==null)
-					{
-						com.runCommand(cmd.toString());
-						robots.add(robName.getText());
+					String add = null;
+					StringBuilder cmd = new StringBuilder();
+					cmd.append(String.format("Init type %s at 10 10 named %s",
+							comb.getText(), robName.getText()));
+					if (armButton.getSelection() && smartButton.getSelection())
+						add = "all";
+					else if (armButton.getSelection())
+						add = "arm";
+					else if (armButton.getSelection())
+						add = "smartKit";
+					if (add != null)
+						cmd.append(String.format(" with %s", add));
+					try {
+						if (robName.getText() != ""
+								&& sim.getRobot(robName.getText()) == null) {
+							com.runCommand(cmd.toString());
+							robots.add(robName.getText());
+						} else if (robName.getText() == "")
+							ErrorPrint.PrintError("Please enter Robot's name");
+						else
+							ErrorPrint
+									.PrintError("Robot with this name has already been created!");
+					} catch (FileNotFoundException e) {
+						System.out.print("Error: file not found.\n");
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
-					else if(robName.getText()=="") ErrorPrint.PrintError("Please enter Robot's name");
-					else ErrorPrint.PrintError("Robot with this name has already been created!");
-				} catch (FileNotFoundException e)
+				}
+				else
 				{
-					System.out.print("Error: file not found.\n");
-				} catch (IOException e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					ErrorPrint.PrintError("Please Stop simulation before adding a new Robot.");
 				}
 			}
 	    });
 	}
-	public static void main(String[] args) {
+	
+	public static void main(String[] args)
+	{
 	    final Display display = new Display();
 	    final Shell shell = new Shell(display);
 	    @SuppressWarnings("unused")
@@ -185,10 +194,8 @@ public class GUI {
 	    fileMenuHeader.setMenu(fileMenu);
 	    startSimItem = new MenuItem(fileMenu, SWT.PUSH);
 	    startSimItem.setText("&Start Simulation");
-	    startSimItem.addSelectionListener(new SelectionListener(){
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e){}
+	    SelectionListener startsimlist=new SelectionListener()
+	    {
 			public void widgetSelected(SelectionEvent event)
 			{
 				if(event.widget==startSimItem)
@@ -196,13 +203,18 @@ public class GUI {
 					try
 					{
 						programs.RunAll();
+						simIsRunning=true;
 					} catch (InterruptedException e)
 					{
 						e.printStackTrace();
 					}
 				}
 			}
-	    });
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e){}
+	    };
+	    startSimItem.addSelectionListener(startsimlist);
 	    stopSimItem = new MenuItem(fileMenu, SWT.PUSH);
 	    stopSimItem.setText("&Stop Simulation");
 	    stopSimItem.addSelectionListener(new SelectionListener(){
@@ -211,8 +223,8 @@ public class GUI {
 			{
 				if(event.widget==stopSimItem)
 				{
-					for(int i=0;i<programs.size();i++)
-						programs.shutDown();
+					programs.shutDown();
+					simIsRunning=false;
 				}
 			}
 	    });
@@ -232,17 +244,25 @@ public class GUI {
 			{
 				if(event.widget==fileExitItem)
 				{
-					shell.close();
-					display.dispose();
+					if (!simIsRunning) {
+						shell.close();
+						display.dispose();
+					}
+					else ErrorPrint.PrintError("Please Stop Simulation before exiting.");
 				}
 				else if(event.widget==boxAddItem)
 				{
-					InputDialog dlg = new InputDialog(shell,SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
-				    Box tempbox = dlg.open();
-				    if(tempbox!=null)
-				    {
-				    	boxes.AddBox(tempbox);
-				    };
+					if (!simIsRunning)
+					{
+						InputDialog dlg = new InputDialog(shell,
+								SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
+						Box tempbox = dlg.open();
+						if (tempbox != null)
+						{
+							boxes.AddBox(tempbox);
+						}
+					}
+					else ErrorPrint.PrintError("Please stop simulation before adding a Box.");
 				}
 			}	    	
 	    };
@@ -281,11 +301,18 @@ public class GUI {
 	    {
 	        public void handleEvent(Event event) 
 	        {
-	            int style =
-	               SWT.OK | SWT.CANCEL | SWT.ICON_QUESTION | SWT.APPLICATION_MODAL;
-	            MessageBox box = new MessageBox(shell, style);
-	            box.setMessage("Exit the application?");
-	            event.doit = box.open() == SWT.OK;
+	            if (!simIsRunning) 
+	            {
+					int style = SWT.OK | SWT.CANCEL | SWT.ICON_QUESTION
+							| SWT.APPLICATION_MODAL;
+					MessageBox box = new MessageBox(shell, style);
+					box.setMessage("Exit the application?");
+					event.doit = box.open() == SWT.OK;
+				}
+	            else
+	            {
+	            	ErrorPrint.PrintError("Please stop simulation before exiting.");
+	            }
 	        }
 	    };
 	    display.addListener(SWT.Close, listener1);
@@ -328,7 +355,7 @@ public class GUI {
 						for(int i=0;i<sim.GetSize();i++)
 						{
 							Position pos=new Position(sim.robList.get(i).getCurrentPosition());
-							if(isInArea(event.x,event.y,my-pos.y,pos.x+mx))
+							if(isInArea(event.x,event.y,my-pos.y,pos.x+mx) && !simIsRunning)
 							{
 								myRob=sim.robList.get(i);
 							}
@@ -354,7 +381,7 @@ public class GUI {
 				double distX=x-currx;
 				double distY=y-curry;
 				// Calculate distance moved.
-				if(Math.sqrt(Math.pow(distX, 2)+Math.pow(distY, 2))<=4) return true;
+				if(Math.sqrt(Math.pow(distX, 2)+Math.pow(distY, 2))<=8) return true;
 				return false;
 			}
 		};

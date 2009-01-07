@@ -24,7 +24,8 @@ public class ErrorPrint
 	}
 	public static void PrintError(String message)
 	{
-		MessageBox box = new MessageBox(shell, SWT.OK | SWT.APPLICATION_MODAL);
+		MessageBox box = new MessageBox(shell, SWT.OK | SWT.ERROR | SWT.APPLICATION_MODAL);
+		box.setText("Error!");
 	    box.setMessage(message);
 	    int rc = box.open();
 	}
