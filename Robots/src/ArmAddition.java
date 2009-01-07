@@ -1,4 +1,5 @@
-import java.io.File;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.widgets.Canvas;
 
 /**
  * ArmAddition Class
@@ -8,7 +9,6 @@ public class ArmAddition implements Robot
 {
 	protected Robot rob;
 	private Box myBox;
-	protected File program;
 	public ArmAddition(Robot robby) 
 	{
 		rob=robby;
@@ -77,7 +77,7 @@ public class ArmAddition implements Robot
 	{
 		return rob.getSpeed();
 	}
-	public boolean pickupBox(Box b)
+	public synchronized boolean pickupBox(Box b)
 	{
 		if(b.getPosition().compareTo((this.getCurrentPosition()))==0)
 		{
@@ -91,7 +91,7 @@ public class ArmAddition implements Robot
 		}
 		return false;
 	}
-	public boolean putdownBox()
+	public synchronized boolean putdownBox()
 	{
 		if(myBox!=null && rob.getSpeed()==0)
 		{
@@ -107,14 +107,46 @@ public class ArmAddition implements Robot
 	@Override
 	public void SetProgram(String filename)
 	{
-		program=new File(filename);
+		rob.SetProgram(filename);
 	}
 	/* (non-Javadoc)
 	 * @see Robot#getProgram()
 	 */
 	@Override
-	public File getProgram()
+	public String getProgram()
 	{
-		return program;
+		return rob.getProgram();
 	}
+	/* (non-Javadoc)
+	 * @see Robot#paint(org.eclipse.swt.events.PaintEvent)
+	 */
+	@Override
+	public void paint(PaintEvent e)
+	{
+		Canvas c=(Canvas)e.widget;	// get the canvas
+		int maxX = c.getSize().x;	// max size
+		int maxY = c.getSize().y;
+		int mx=maxX/2,my=maxY/2;	// mid point as (0,0)
+		int myX=mx+rob.getCurrentPosition().x;	// set the current position
+		int myY=my-rob.getCurrentPosition().y;	// set the current position
+		e.gc.drawPolyline(new int[] {myX-7,myY-7,myX-7,myY+7,myX+7,myY+7,myX+7,myY-7});
+		rob.paint(e);
+	}
+	/* (non-Javadoc)
+	 * @see Robot#GetLine(int)
+	 */
+	@Override
+	public String GetLine(int index)
+	{
+		return rob.GetLine(index);
+	}
+	/* (non-Javadoc)
+	 * @see Robot#setPosition(Position)
+	 */
+	@Override
+	public void setPosition(Position pos)
+	{
+		rob.setPosition(pos);
+	}
+
 }

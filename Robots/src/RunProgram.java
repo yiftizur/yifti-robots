@@ -1,19 +1,30 @@
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 public class RunProgram implements Runnable
 {
 	Robot rob;
-	File program;
 	private static int pCounter;
 	private int seCounter;
 	private RobotActions act;
 	private Boxes boxes;
-	private BufferedReader br;
 	private int time;
 	private String line;
+	private boolean keepAlive;
+	/**
+	 * @return the keepAlive
+	 */
+	public boolean isKeepAlive()
+	{
+		return keepAlive;
+	}
+	/**
+	 * @param keepAlive the keepAlive to set
+	 */
+	public void setKeepAlive(boolean keepAlive)
+	{
+		this.keepAlive = keepAlive;
+	}
 	/**
 	 *  Constructor
 	 * Description: 
@@ -25,11 +36,9 @@ public class RunProgram implements Runnable
 		this.boxes=box;
 		this.seCounter=0;
 		this.line=null;
-		program=rob.getProgram();
-		act=new RobotActions(rob,boxes);
+		this.act=new RobotActions(rob, boxes);
 		RunProgram.pCounter=0;
-		// Create new buffer reader.
-		br=new BufferedReader(new FileReader(program));
+		keepAlive=true;
 	}
 	public void setTime(int time)
 	{
@@ -39,24 +48,19 @@ public class RunProgram implements Runnable
 	{
 		try
 		{
-			if(seCounter==0) line=br.readLine();
 			do
 			{
-				if(act.GetComTime(line)==seCounter)
+				line=rob.GetLine(seCounter);
+				if(line!=null)
 				{
 					act.runCommand(line,seCounter);
-					System.out.format("\t%s on %s: %s\n",
-							program.getName(),rob.getName(),line);
 					setPCounter(getPCounter() + 1);
-					line=br.readLine();
 				}
-				//if(pCounter>1) br.reset();
-				if(line==null) seCounter=time;
 				rob.act();
 				seCounter++;
 				if(seCounter!=time) Thread.sleep(1000);
 			}
-			while(seCounter<=time);
+			while(keepAlive);
 		}
 		catch (FileNotFoundException e)
 		{

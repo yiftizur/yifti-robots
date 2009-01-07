@@ -30,6 +30,20 @@ public class Programs
 		}
 		Delay(time);
 	}
+	public void RunAll() throws InterruptedException
+	{
+		for(int i=0;i<programs.size();i++)
+		{
+			Thread t=threads.get(i);
+			t=new Thread(programs.get(i));
+			t.start();
+		}
+		/*for (int i = 0; i < threads.size(); i++)
+		{
+			Thread t=threads.get(i);
+			if(t.isAlive()) t.join();
+		}*/
+	}
 	public void Delay(int sec)
 	{
 		try
@@ -39,6 +53,22 @@ public class Programs
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+	public int size()
+	{
+		return programs.size();
+	}
+	/**
+	 * Method: shutDown
+	 * Returns: void
+	 * Description:
+	 */
+	public void shutDown()
+	{
+		for(int i=0;i<programs.size();i++)
+		{
+			programs.get(i).setKeepAlive(false);
 		}
 	}
 }

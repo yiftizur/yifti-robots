@@ -1,0 +1,13 @@
+Init type Aibo at 0 0 named azit with arm
+Init type Aibo at -10 0 named kishta with arm
+PutBox at 10 10 named box1
+Assign azit with program1.txt
+Assign kishta with program2.txt
+Simulate 12 seconds
+Get azit position
+Get kishta position
+Simulate 50 seconds
+Get azit position
+Get kishta position
+List robots by distance
+Get box1 position

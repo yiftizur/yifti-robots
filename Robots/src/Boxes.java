@@ -1,3 +1,4 @@
+import java.util.Collection;
 import java.util.HashMap;
 
 public class Boxes
@@ -15,5 +16,9 @@ public class Boxes
 	{
 		if(!nameMap.isEmpty()) return nameMap.get(bname);
 		else return null;
+	}
+	public Collection<Box> getNames()
+	{
+		return nameMap.values();
 	}
 }

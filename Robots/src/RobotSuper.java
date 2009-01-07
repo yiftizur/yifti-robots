@@ -1,4 +1,10 @@
-import java.io.File;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.HashMap;
+
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.widgets.Canvas;
 
 
 /**
@@ -16,14 +22,14 @@ public class RobotSuper implements Robot
 	protected int headingLimit=0;
 	// Robot name.
 	protected String name;
-	protected File program;
-	
+	protected String fName;
+	private HashMap<Integer, String> lines;
 	/**
 	 * @return the program
 	 */
-	public File getProgram()
+	public String getProgram()
 	{
-		return program;
+		return fName;
 	}
 	/**
 	 * RobotSuper Constructor
@@ -33,6 +39,10 @@ public class RobotSuper implements Robot
 	{
 		start=new Position(0,0);
 		current=new Position(0,0);
+		heading=0;
+		speed=0;
+		lines=new HashMap<Integer, String>();
+		fName=null;
 	}
 	/**
 	 * RobotSuper Constructor
@@ -42,6 +52,10 @@ public class RobotSuper implements Robot
 	{
 		start=new Position(x,y);
 		current=new Position(x,y);
+		heading=0;
+		speed=0;
+		lines=new HashMap<Integer, String>();
+		fName=null;
 	}
 
 	/**
@@ -216,6 +230,62 @@ public class RobotSuper implements Robot
 	}
 	public void SetProgram(String filename)
 	{
-		program=new File(filename);
+		ReadFile(filename);
+		fName=filename;
+	}
+	public void paint(PaintEvent e)
+	{
+		double deg=GetDeg(heading);
+		Canvas c=(Canvas)e.widget;	// get the canvas
+		int maxX = c.getSize().x;	// max size
+		int maxY = c.getSize().y;
+		int mx=maxX/2,my=maxY/2;	// mid point as (0,0)
+		int myX=mx+current.x;	// set the current position
+		int myY=my-current.y;	// set the current position
+			
+		e.gc.drawOval(myX-10, myY-10, 20, 20);	// the circle
+			
+		/*
+		 * draw the heading indicator here
+		 * use e.gc.drawLine  
+		 */
+		e.gc.drawLine(myX, myY,
+				myX+Math.round((float)((30*(Math.cos(deg))))), myY-Math.round((float)((30*(Math.sin(deg))))));
+
+		// the info
+		e.gc.drawString(name,myX+13, myY-13,true);
+		e.gc.drawString(this.getClass().toString().split(" ")[1],myX+13, myY,true);
+		e.gc.drawString("("+current.x+","+current.y+")",myX+13, myY+13,true);
+	}
+	public void ReadFile(String program)
+	{
+		String format="(\\d+) (\\w+)";
+		try
+		{
+			BufferedReader br = new BufferedReader(new FileReader(
+					program));
+			String line = br.readLine();
+			while (line != null)
+			{
+				lines.put(Integer.parseInt(line.split(" ")[0]), line);
+				line = br.readLine();
+			}
+			br.close();
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+	}
+	public String GetLine(int index)
+	{
+		return lines.get(index);		
+	}
+	/* (non-Javadoc)
+	 * @see Robot#setPosition(Position)
+	 */
+	@Override
+	public void setPosition(Position pos)
+	{
+		current=pos;		
 	}
 }

@@ -1,10 +1,9 @@
-import java.io.File;
+import org.eclipse.swt.events.PaintEvent;
 
 public class SmartRobot implements Robot
 {
 	protected Robot rob;
 	private int sHeading;
-	protected File program;
 	/**
 	 * @param robby Constructor
 	 * Description: 
@@ -101,14 +100,38 @@ public class SmartRobot implements Robot
 	@Override
 	public void SetProgram(String filename)
 	{
-		program=new File(filename);
+		rob.SetProgram(filename);
 	}
 	/* (non-Javadoc)
 	 * @see Robot#getProgram()
 	 */
 	@Override
-	public File getProgram()
+	public String getProgram()
 	{
-		return program;
+		return rob.getProgram();
+	}
+	/* (non-Javadoc)
+	 * @see Robot#paint(org.eclipse.swt.events.PaintEvent)
+	 */
+	@Override
+	public void paint(PaintEvent e)
+	{
+		rob.paint(e);
+	}
+	/* (non-Javadoc)
+	 * @see Robot#GetLine(int)
+	 */
+	@Override
+	public String GetLine(int index)
+	{
+		return rob.GetLine(index);
+	}
+	/* (non-Javadoc)
+	 * @see Robot#setPosition(Position)
+	 */
+	@Override
+	public void setPosition(Position pos)
+	{
+		rob.setPosition(pos);
 	}	
 }

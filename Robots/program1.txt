@@ -1,0 +1,7 @@
+0 Move speed 1 heading 0
+10 Move speed 5 heading 90
+12 Stop
+13 Pickup box1
+14 Move speed 1 heading 270
+34 Stop
+35 PutBoxDown

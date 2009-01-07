@@ -23,6 +23,7 @@ public class Commands
 	private HashMap<String,String> messageMap;
 	// Robot factory object for creating robots by string.
 	RobotFactory fact = new RobotFactory();
+	RobotActions actions;
 	File fl=new File(".");
 	/**
 	 * Commands Constructor
@@ -132,8 +133,6 @@ public class Commands
 					rob.setName(name);
 					rob.setStartingPosition(pos);
 					MakeRob(addition, rob);
-					System.out.printf("%s %s at %d,%d named %s\n",
-							messageMap.get(addition),type,pos.x,pos.y,name);
 					return true;// correct format
 				}
 				// If the provided robot type is invalid.
@@ -157,7 +156,6 @@ public class Commands
 					rob.setName(name);
 					rob.setStartingPosition(pos);
 					sim.addRobot(rob);
-					System.out.printf("new %s at %d,%d named %s\n",type,pos.x,pos.y,name);
 				}
 				// If the provided robot type is invalid.
 				else System.out.println("Error: no such robot type.");
@@ -464,7 +462,7 @@ public class Commands
 				String filename=scn.match().group(2);
 				File fl=new File(filename);
 				if(!fl.exists())
-					System.out.print("Error: file not found.\n");
+					ErrorPrint.PrintError("Error: file not found.\n");
 				else
 				{
 					Robot rob=sim.getRobot(name);
@@ -475,9 +473,9 @@ public class Commands
 							rob.SetProgram(filename);
 							progs.addProgram(new RunProgram(rob,boxes));
 						}
-						else System.out.println("another program is assigned to this robot.");
+						else ErrorPrint.PrintError("another program is assigned to this robot.");
 					}
-					else System.out.println("Error: no such robot with this name.");
+					else ErrorPrint.PrintError("Error: no such robot with this name.");
 				}
 				return true;// correct format
 			}
