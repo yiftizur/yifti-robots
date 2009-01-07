@@ -77,7 +77,7 @@ public class GUI {
 			public void widgetDefaultSelected(SelectionEvent arg0){}			
 		});
 	}
-	private static void initGroup(Group g, final Commands com)
+	private static void initGroup(Group g, final Commands com,final Simulation sim)
 	{
 		// first row
 		new Label(g,SWT.CENTER).setText("Name");
@@ -136,12 +136,13 @@ public class GUI {
 				if(add!=null) cmd.append(String.format(" with %s",add));
 				try
 				{
-					if(robName.getText()!=null && )
+					if(robName.getText()!="" && sim.getRobot(robName.getText())==null)
 					{
 						com.runCommand(cmd.toString());
 						robots.add(robName.getText());
 					}
-					
+					else if(robName.getText()=="") ErrorPrint.PrintError("Please enter Robot's name");
+					else ErrorPrint.PrintError("Robot with this name has already been created!");
 				} catch (FileNotFoundException e)
 				{
 					System.out.print("Error: file not found.\n");
@@ -258,7 +259,7 @@ public class GUI {
 	    /* call an "init" method to insert components into group1,
 	     * see what happens in group2, to get a hint on how to do it.
 	     */
-	    initGroup(group1,com);
+	    initGroup(group1,com, sim);
 	    
 	    // ==== Group 2
 	    //set the group of the lists
@@ -325,39 +326,36 @@ public class GUI {
 				int mx=maxX/2,my=maxY/2;	// mid point as (0,0)
 				switch (event.type) {
 					case SWT.MouseDown:
-						isDown=true;
-						canvas.redraw();
 						for(int i=0;i<sim.GetSize();i++)
 						{
-							Position pos=sim.robList.get(i).getCurrentPosition();
-							pos.x+=mx;
-							pos.y=my-pos.y;
-							if(isInArea(event.x,event.y,pos.y,pos.x))
+							Position pos=new Position(sim.robList.get(i).getCurrentPosition());
+							if(isInArea(event.x,event.y,my-pos.y,pos.x+mx))
 							{
 								myRob=sim.robList.get(i);
 							}
 						}
-						canvas.redraw();
-						canvas.update();
 						break;
 					case SWT.MouseMove:
-						if(isDown && myRob!=null)
+						if(myRob!=null)
 						{
-							myRob.setPosition(new Position(event.x-mx,event.y+my));
+							myRob.setPosition(new Position(event.x-mx,my-event.y));
 							canvas.redraw();
 							canvas.update();
 						}
 						break;
 					case SWT.MouseUp:
-						isDown=false;
+						myRob=null;
 						break;
 				}
 			}
 
 			private boolean isInArea(int x, int y, int curry, int currx)
 			{
-				if(x>=currx-10 && x<=currx+10 && y>=curry-10 && y<=curry+10)
-					return true;
+				// Get deficits between current coordinates, and starting ones.
+				double distX=x-currx;
+				double distY=y-curry;
+				// Calculate distance moved.
+				if(Math.sqrt(Math.pow(distX, 2)+Math.pow(distY, 2))<=4) return true;
 				return false;
 			}
 		};

@@ -26,6 +26,11 @@ public class Position implements Comparable<Position>
 		x=Integer.parseInt(string);
 		y=Integer.parseInt(string2);
 	}
+	public Position(Position currentPosition)
+	{
+		this.x=currentPosition.x;
+		this.y=currentPosition.y;
+	}
 	/* (non-Javadoc)
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */

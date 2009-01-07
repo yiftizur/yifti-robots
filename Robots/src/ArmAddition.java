@@ -81,7 +81,7 @@ public class ArmAddition implements Robot
 	{
 		if(b.getPosition().compareTo((this.getCurrentPosition()))==0)
 		{
-			if(!b.isPicked && myBox==null && rob.getSpeed()==0)
+			if(!b.isPicked && myBox==null)
 			{
 				myBox=b;
 				b.isPicked=true;
@@ -93,7 +93,7 @@ public class ArmAddition implements Robot
 	}
 	public synchronized boolean putdownBox()
 	{
-		if(myBox!=null && rob.getSpeed()==0)
+		if(myBox!=null)
 		{
 			myBox.isPicked=false;
 			myBox=null;
