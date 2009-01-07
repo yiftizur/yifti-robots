@@ -259,7 +259,6 @@ public class RobotSuper implements Robot
 	}
 	public void ReadFile(String program)
 	{
-		String format="(\\d+) (\\w+)";
 		try
 		{
 			BufferedReader br = new BufferedReader(new FileReader(

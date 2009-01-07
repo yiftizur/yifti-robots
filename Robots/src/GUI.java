@@ -317,7 +317,6 @@ public class GUI {
 	    	}
 	    },1000,1000);
 	    Listener mouselistener = new Listener () {
-			private boolean isDown;
 			private Robot myRob;
 
 			public void handleEvent (Event event) {
