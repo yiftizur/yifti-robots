@@ -95,8 +95,14 @@ public class Commands
 		String firstword=scn.next();
 		if(commandsMap.get(firstword)!=null)
 		{
-			if((commandsMap.get(firstword)).execute(cmd));
-			else System.out.println("Error: command not found.");
+			try
+			{
+				if((commandsMap.get(firstword)).execute(cmd));
+				else System.out.println("Error: command not found.");
+			} catch (PrgErrException e)
+			{
+				ErrorPrint.PrintError(e.GetMessage());
+			}
 		}
 		else System.out.println("Error: command not found.");
 	}
@@ -230,14 +236,7 @@ public class Commands
 				scn.findInLine(format);// scans according to the format
 				// get the variables
 				int seconds=Integer.parseInt(scn.match().group(1));
-				try
-				{
-					progs.RunAll(seconds);
-				} catch (InterruptedException e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				progs.RunAll(seconds);
 				// do the required action
 				return true;// correct format
 			}			
@@ -460,19 +459,27 @@ public class Commands
 				// get the variables
 				String name=scn.match().group(1);
 				String filename=scn.match().group(2);
+				// Check program file exists.
 				File fl=new File(filename);
 				if(!fl.exists())
+					// Print error message if not.
 					ErrorPrint.PrintError("Error: file not found.\n");
 				else
 				{
+					// Get robot by name.
 					Robot rob=sim.getRobot(name);
+					// Check robot exists.
 					if(rob!=null)
 					{
+						// Check robot has no program.
 						if(rob.getProgram()==null)
 						{
+							// Set program to robot.
 							rob.SetProgram(filename);
+							// Create and add a new RunProgram instance for robot.
 							progs.addProgram(new RunProgram(rob,boxes));
 						}
+						// If robot has program
 						else ErrorPrint.PrintError("another program is assigned to this robot.");
 					}
 					else ErrorPrint.PrintError("Error: no such robot with this name.");

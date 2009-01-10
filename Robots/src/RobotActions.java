@@ -4,17 +4,19 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 
+/**
+ * RobotActions Class.
+ * Class for executing commands from a robots assigned program.
+ */
 public class RobotActions
 {
 	Robot rob;
 	// The Boxes object for calling and manipulating boxes.
 	private Boxes boxes;
-	private int recTime;
 	private HashMap<String,Command> commandsMap;
 	/**
-	 * @param sim
-	 * @param boxes Constructor
-	 * Description: 
+	 * RobotActions Constructor
+	 * Description: Creates new object with provided robot and Boxes.
 	 */
 	public RobotActions(Robot rob,Boxes b)
 	{
@@ -27,26 +29,58 @@ public class RobotActions
 		add(new PickupCommand());
 		add(new PutDownCommand());
 	}
+	
+	/**
+	 * Method: add
+	 * Returns: void
+	 * Description: Add given command to Commands hashmap.
+	 */
+	
 	private void add(Command c)
 	{
 		 commandsMap.put(c.getKey(), c);
 	}
-	public void runCommand(String cmd,int time) throws FileNotFoundException, IOException
+	
+	
+	/**
+	 * Method: runCommand
+	 * Returns: void
+	 * @param cmd
+	 * @param time
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 * @throws PrgErrException
+	 * Description: Runs the provided command according to command key word.
+	 */
+	
+	public void runCommand(String cmd) throws FileNotFoundException, IOException, PrgErrException
 	{
-		
+		// Get second word in command.
 		String firstword=cmd.split(" ")[1];
-		this.recTime=time;
+		// If command exists in hashmap.
 		if(commandsMap.get(firstword)!=null)
 		{
+			// If command completed successfully.
 			if((commandsMap.get(firstword)).execute(cmd));
-			else System.out.println("Error: command not found.");
+			// Else throw exception for error.
+			else throw new PrgErrException("Error in Commands file");
 		}
-		else System.out.println("Error: command not found.");
+		// Else throw exception for error.
+		else throw new PrgErrException("Error in Commands file");
 	}
+	
+	/**
+	 * Method: GetComTime
+	 * Returns: int
+	 * @param cmd
+	 * @return
+	 * Description: Returns Command's time from line.
+	 */
 	public int GetComTime(String cmd)
 	{
 		return Integer.parseInt(cmd.split(" ")[0]);
 	}
+	
 	/**
 	 * MoveCommand class
 	 * Implementation of the Command interface for Move commands.
@@ -72,19 +106,20 @@ public class RobotActions
 				scn.findInLine(format);// scans according to the format
 
 				// get the variables
-				int secs=Integer.parseInt(scn.match().group(1));
 				int speed=Integer.parseInt(scn.match().group(2));
 				int heading=Integer.parseInt(scn.match().group(3));
-				if(secs==recTime)
-				{
-					rob.move(speed, heading);
-				}
+				rob.move(speed, heading);
 				return true;
 			}
 			return false;// wrong format
 		}
-
 	}
+	
+	/**
+	 * StopCommand class
+	 * Implementation of the Command interface for Stop commands.
+	 */
+	
 	public class StopCommand implements Command
 	{
 		String format="(\\d+) Stop";
@@ -93,27 +128,31 @@ public class RobotActions
 		{ 
 			return "Stop";
 		}
-		/* (non-Javadoc)
-		 * @see Command#execute(java.lang.String)
+		
+		/*
+		 * Execute command - implements method from interface.
+		 * Runs appropriate command for current class.
 		 */
-		@Override
+		
 		public boolean execute(String cmd)
 		{
+			// if the command we got fits the correct format
 			if(cmd.matches(format))
 			{
-				Scanner scn=new Scanner(cmd);
-				scn.findInLine(format);// scans according to the format
-				int secs=Integer.parseInt(scn.match().group(1));
-				if(secs==recTime)
-				{
-					rob.stop();
-				}
+				// Stop robot's movement.
+				rob.stop();
 				return true;
 			}
 			return false;
 		}
 		
 	}
+	
+	/**
+	 * PickupCommand class
+	 * Implementation of the Command interface for Pickup commands.
+	 */
+	
 	public class PickupCommand implements Command
 	{
 		String format="(\\d+) Pickup (\\w+)";
@@ -122,37 +161,46 @@ public class RobotActions
 		{ 
 			return "Pickup";
 		}
-		/* (non-Javadoc)
-		 * @see Command#execute(java.lang.String)
+		
+		/*
+		 * Execute command - implements method from interface.
+		 * Runs appropriate command for current class.
 		 */
-		@Override
-		public boolean execute(String cmd)
+		
+		public boolean execute(String cmd) throws PrgErrException
 		{
+			// if the command we got fits the correct format
 			if(cmd.matches(format))
 			{
 				Scanner scn=new Scanner(cmd);
 				scn.findInLine(format);// scans according to the format
-				int secs=Integer.parseInt(scn.match().group(1));
+				// Get variables.
 				String box=scn.match().group(2);
+				// get Box.
 				Box b=boxes.getBox(box);
+				// Check box exists.
 				if(b==null)
 				{
-					System.out.format("\t%s on %s: Error: no box by that name.\n",
-							rob.getProgram().toString(),rob.getName());
-					return true;
+					// If not, throw exception with appropriate message.
+					throw new PrgErrException(String.format("\t%s on %s: Error: no box by that name.\n",
+							rob.getProgram().toString(),rob.getName()));
 				}
-				if(secs==recTime)
-				{
-					if(rob.pickupBox(b));
-					else System.out.format("\t%s on %s: %s is unable to pickup %s\n",
-							rob.getProgram().toString(),rob.getName(),rob.getName(),b.getName());
-				}
+				// Check pickup was successful.
+				if(rob.pickupBox(b));
+				// If not, throw exception with appropriate message.
+				else throw new PrgErrException(String.format("\t%s on %s: %s is unable to pickup %s\n",
+							rob.getProgram().toString(),rob.getName(),rob.getName(),b.getName()));
 				return true;
 			}
 			return false;
 		}
-		
 	}
+	
+	/**
+	 * PutDownCommand class
+	 * Implementation of the Command interface for Putdown commands.
+	 */
+	
 	public class PutDownCommand implements Command
 	{
 		String format="(\\d+) PutBoxDown";
@@ -161,23 +209,21 @@ public class RobotActions
 		{ 
 			return "PutBoxDown";
 		}
-		/* (non-Javadoc)
-		 * @see Command#execute(java.lang.String)
+		
+		/*
+		 * Execute command - implements method from interface.
+		 * Runs appropriate command for current class.
 		 */
-		@Override
+		
 		public boolean execute(String cmd)
 		{
+			// if the command we got fits the correct format
 			if(cmd.matches(format))
 			{
-				Scanner scn=new Scanner(cmd);
-				scn.findInLine(format);// scans according to the format
-				int secs=Integer.parseInt(scn.match().group(1));
-				if(secs==recTime)
-				{
-					if(!rob.putdownBox()) 
-						System.out.format("\t%s on %s: Error: %s has no box.\n",
-								rob.getProgram().toString(),rob.getName(),rob.getName());
-				}
+				// Check if put down was not successful.
+				if(!rob.putdownBox()) ErrorPrint.PrintError(String.format
+						("\t%s on %s: Error: %s has no box.\n",rob.getProgram().
+								toString(),rob.getName(),rob.getName()));
 				return true;
 			}
 			return false;

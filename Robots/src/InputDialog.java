@@ -46,7 +46,7 @@ public class InputDialog extends Dialog
 			}
 		}
 		
-		if(name!=null)
+		if(name!="")
 		{
 			Box box=new Box(name);
 			if(pos!=null)
@@ -59,6 +59,7 @@ public class InputDialog extends Dialog
 			}
 			return box;
 		}
+		ErrorPrint.PrintError("Box name cannot be empty");
 		return null;
 	}
 
@@ -109,7 +110,17 @@ public class InputDialog extends Dialog
 			public void widgetSelected(SelectionEvent event)
 			{
 				name = text.getText();
-				pos=new Position(text1.getText(), text2.getText());
+				try
+				{
+					int x = Integer.parseInt(text1.getText());
+					int y = Integer.parseInt(text2.getText());
+					pos = new Position(x, y);
+				} catch (NumberFormatException e)
+				{
+					ErrorPrint.PrintError("numbers entered are not Valid!");
+					name ="";
+					shell.close();
+				}
 				shell.close();
 			}
 		});

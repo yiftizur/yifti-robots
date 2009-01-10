@@ -24,12 +24,26 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+/**
+ * 
+ * General GUI Class for representing all robots,boxes and their interactions
+ * in a Graphical interface.
+ */
 public class GUI {	
 	private static List robots,files;
 	private static Canvas canvas;
 	static boolean simIsRunning=false;
+	protected static Programs progs;
+	protected static Boxes boxes;
+	protected static Simulation sim;
 	
-	private static void initLists(Group g, final Commands com){
+	/*
+	 * Initializer for the right most group in the display Layout.
+	 * Creates the Robots and Files lists, and the assign button.
+	 * Add selection listener to the Assign button.
+	 */
+	private static void initLists(Group g)
+	{
 		// headlines:
 		new Label(g,SWT.NONE).setText("Robots List");
 		new Label(g,SWT.NONE);	// blank
@@ -44,42 +58,33 @@ public class GUI {
 		files.setLayoutData(new GridData(150,80));
 		File f=new File(".");
 		files.setItems(f.list());
-		b.addSelectionListener(new SelectionListener(){
+		// Create listener for the assign button.
+		b.addSelectionListener(new SelectionListener()
+		{
 			public void widgetSelected(SelectionEvent event)
 			{
-				if (!simIsRunning) {
-					StringBuilder cmd = new StringBuilder();
-					int index = robots.getSelectionIndex();
-					String name = null;
-					if (index >= 0)
-						name = robots.getItem(index);
-					String prog = files.getItem(files.getSelectionIndex());
-					cmd.append(String.format("Assign %s with %s", name, prog));
-					try {
-						if (name != null && prog != null) {
-							com.runCommand(cmd.toString());
-							if (robots.getItem(index).matches("(\\w+)")) {
-								robots.remove(name);
-								robots.add(name + " " + prog);
-							} else
-								ErrorPrint
-										.PrintError("another program is assigned to this robot.");
-						}
-					} catch (FileNotFoundException e) {
-						System.out.print("Error: file not found.\n");
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+				// Check if simulation is running.
+				if (!simIsRunning)
+				{
+					String name=robots.getSelection()[0];
+					String prog=files.getSelection()[0];
+					new AssignCmd(name,prog, sim, boxes, progs,robots).execute();
 				}
-					
 			}
 			public void widgetDefaultSelected(SelectionEvent arg0){}			
 		});
 	}
-	private static void initGroup(Group g, final Commands com,final Simulation sim)
+	
+	/*
+	 * Initializer for the left most group in the display Layout.
+	 * Creates the Add robot form with its buttons and fields.
+	 * Assigns various listeners to the different buttons.
+	 */
+	
+	private static void initGroup(Group g)
 	{
 		// first row
+		// Label - Text - Check Button - Button
 		new Label(g,SWT.CENTER).setText("Name");
 		
 		final Text robName=new Text(g,SWT.SINGLE);
@@ -100,7 +105,9 @@ public class GUI {
 		grid.grabExcessVerticalSpace=true;
 		grid.verticalSpan=2;
 	    addButton.setLayoutData(grid);
+	    
 	    //Second Row.
+	    // Label - Drop Down List - Check Button
 		new Label(g,SWT.CENTER).setText("Type");
 		
 		final Combo comb=new Combo(g,SWT.DROP_DOWN | SWT.READ_ONLY | SWT.CENTER);
@@ -117,62 +124,50 @@ public class GUI {
 		grid.verticalAlignment=SWT.CENTER;
 		grid.verticalAlignment=SWT.CENTER;
 		smartButton.setLayoutData(grid);
-		addButton.addSelectionListener(new SelectionListener(){
-
-			@Override
+		// Add selection listener to the Add robot button.
+		addButton.addSelectionListener(new SelectionListener()
+		{
 			public void widgetDefaultSelected(SelectionEvent arg0){}
 			public void widgetSelected(SelectionEvent arg0)
 			{
-				if (!simIsRunning) 
+				// Check if simulation is running.
+				if (!simIsRunning)
 				{
-					String add = null;
-					StringBuilder cmd = new StringBuilder();
-					cmd.append(String.format("Init type %s at 10 10 named %s",
-							comb.getText(), robName.getText()));
-					if (armButton.getSelection() && smartButton.getSelection())
-						add = "all";
-					else if (armButton.getSelection())
-						add = "arm";
-					else if (armButton.getSelection())
-						add = "smartKit";
-					if (add != null)
-						cmd.append(String.format(" with %s", add));
-					try {
-						if (robName.getText() != ""
-								&& sim.getRobot(robName.getText()) == null) {
-							com.runCommand(cmd.toString());
-							robots.add(robName.getText());
-						} else if (robName.getText() == "")
-							ErrorPrint.PrintError("Please enter Robot's name");
-						else
-							ErrorPrint
-									.PrintError("Robot with this name has already been created!");
-					} catch (FileNotFoundException e) {
-						System.out.print("Error: file not found.\n");
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-				else
-				{
-					ErrorPrint.PrintError("Please Stop simulation before adding a new Robot.");
+					String name=robName.getText();
+					String add="";
+					String type=comb.getItem(comb.getSelectionIndex());
+					if(armButton.getSelection() && smartButton.getSelection())
+						add="all";
+					else if(armButton.getSelection())
+						add="arm";
+					else if(smartButton.getSelection())
+						add="smart";
+					new AddRobCmd(sim,name,type,add,robots).execute();
 				}
 			}
-	    });
+		});
 	}
 	
+	/**
+	 * Method: main
+	 * Returns: void
+	 * @param args
+	 * Description: Main function for GUI section, creates shell and display, and displays
+	 * the different components of the program on screen.
+	 * Shell Layout is created as a 2 column grid.
+	 */
 	public static void main(String[] args)
 	{
+		// Create all needed variables.
 	    final Display display = new Display();
 	    final Shell shell = new Shell(display);
-	    @SuppressWarnings("unused")
-		ErrorPrint error=ErrorPrint.getInstance(shell);
-	    final Simulation sim=new Simulation();
-		final Boxes boxes=new Boxes();
-		final Programs programs=new Programs();
+	    // Init Static Error Printing class.
+	    ErrorPrint error=ErrorPrint.getInstance(shell);
+	    sim=new Simulation();
+		boxes=new Boxes();
+		progs=new Programs();
 		// Robots command object.
-		Commands com=new Commands(sim, boxes, programs);
+		// Set Shell Layout.
 	    shell.setLayout(new GridLayout(2,false));
 	    shell.setText("Advanced Programming exercise 1");
 	    shell.setSize(700, 600);
@@ -181,91 +176,99 @@ public class GUI {
 	    // ==== Menu Bar
 	    
 	 // Menu Item
+	    // Declare Menu objects, and MenuItem objects.
 	    Menu menuBar, fileMenu, boxMenu;
 	    MenuItem fileMenuHeader, boxMenuHeader;
 	    final MenuItem fileExitItem;
 		final MenuItem startSimItem;
 		final MenuItem stopSimItem;
 		final MenuItem boxAddItem;
+		// Create new Menu Bar for shell.
 	    menuBar = new Menu(shell, SWT.BAR);
+	    // Create new Menu item in new menu bar.
 	    fileMenuHeader = new MenuItem(menuBar, SWT.CASCADE);
 	    fileMenuHeader.setText("&File");
 	    fileMenu = new Menu(shell, SWT.DROP_DOWN);
 	    fileMenuHeader.setMenu(fileMenu);
+	    // Create Start Simulation menu option.
 	    startSimItem = new MenuItem(fileMenu, SWT.PUSH);
 	    startSimItem.setText("&Start Simulation");
+	    // Add selection listener to menu option.
 	    SelectionListener startsimlist=new SelectionListener()
 	    {
 			public void widgetSelected(SelectionEvent event)
 			{
+				// check widget is selected.
 				if(event.widget==startSimItem)
 				{
-					try
-					{
-						programs.RunAll();
-						simIsRunning=true;
-					} catch (InterruptedException e)
-					{
-						e.printStackTrace();
-					}
+					// Start all assigned programs and robots.
+					new StrtSimCmd(progs).execute();
+					simIsRunning=true;
 				}
 			}
-
-			@Override
 			public void widgetDefaultSelected(SelectionEvent e){}
 	    };
 	    startSimItem.addSelectionListener(startsimlist);
+	    // Create Stop Simulation menu option.
 	    stopSimItem = new MenuItem(fileMenu, SWT.PUSH);
 	    stopSimItem.setText("&Stop Simulation");
+	    // Add selection listenr to menu option.
 	    stopSimItem.addSelectionListener(new SelectionListener(){
 			public void widgetDefaultSelected(SelectionEvent e){}
 			public void widgetSelected(SelectionEvent event)
 			{
 				if(event.widget==stopSimItem)
 				{
-					programs.shutDown();
+					// Stop all running programs and robots.
+					new StpSimCmd(progs).execute();
 					simIsRunning=false;
 				}
 			}
 	    });
+	    // Create Exit menu option.
 	    fileExitItem = new MenuItem(fileMenu, SWT.PUSH);
 	    fileExitItem.setText("E&xit");
+	    // Create Box menu.
 	    boxMenuHeader = new MenuItem(menuBar, SWT.CASCADE);
 	    boxMenuHeader.setText("&Box");
 	    boxMenu = new Menu(shell, SWT.DROP_DOWN);
 	    boxMenuHeader.setMenu(boxMenu);
+	    // Create Add Box Menu item.
 	    boxAddItem = new MenuItem(boxMenu, SWT.PUSH);
 	    boxAddItem.setText("&Add Box");
 	    shell.setMenuBar(menuBar);
+	    // Create Selection Listener.
 	    SelectionListener listener= new SelectionListener()
 	    {
 			public void widgetDefaultSelected(SelectionEvent arg0){}
 			public void widgetSelected(SelectionEvent event)
 			{
+				// If exit menu option is chosen.
 				if(event.widget==fileExitItem)
 				{
-					if (!simIsRunning) {
-						shell.close();
-						display.dispose();
+					// Check simulation is not running.
+					if (!simIsRunning) 
+					{
+						new ExitCmd(shell).execute();
 					}
+					// If simulation is running, print error message.
 					else ErrorPrint.PrintError("Please Stop Simulation before exiting.");
 				}
+				// Check if Add Box menu option is selected.
 				else if(event.widget==boxAddItem)
 				{
+					// Check simulation is not running.
 					if (!simIsRunning)
 					{
-						InputDialog dlg = new InputDialog(shell,
-								SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
-						Box tempbox = dlg.open();
-						if (tempbox != null)
-						{
-							boxes.AddBox(tempbox);
-						}
+						new AddBoxCmd(boxes,shell).execute();
+						
 					}
+					// If simulation still running, print error message.
 					else ErrorPrint.PrintError("Please stop simulation before adding a Box.");
 				}
 			}	    	
 	    };
+	    // Add created listener to both Exit and Add Box menu items.
 		fileExitItem.addSelectionListener(listener);
 		boxAddItem.addSelectionListener(listener);
 	    // ==== Group 1
@@ -279,7 +282,7 @@ public class GUI {
 	    /* call an "init" method to insert components into group1,
 	     * see what happens in group2, to get a hint on how to do it.
 	     */
-	    initGroup(group1,com, sim);
+	    initGroup(group1);
 	    
 	    // ==== Group 2
 	    //set the group of the lists
@@ -287,7 +290,7 @@ public class GUI {
 	    // set the group layout to be 3 cols 
 	    group2.setLayout(new GridLayout(3,false));
 	    // init the group components
-	    initLists(group2,com);	// init the lists into group2 
+	    initLists(group2);	// init the lists into group2 
 	    
 	    // ==== the big drawing Canvas
 	    canvas=new Canvas(shell,SWT.BORDER);
@@ -297,91 +300,120 @@ public class GUI {
 	    canvas.addPaintListener(new DrawEnvironment(sim, boxes));
 	    
 	    // --------- end of main window part --------
+	    // Create a new listener for Closing the Shell event.
 	    Listener listener1 = new Listener() 
 	    {
 	        public void handleEvent(Event event) 
 	        {
+	        	// Check simulation is not running.
 	            if (!simIsRunning) 
 	            {
+	            	// Pop message box for verification.
 					int style = SWT.OK | SWT.CANCEL | SWT.ICON_QUESTION
 							| SWT.APPLICATION_MODAL;
 					MessageBox box = new MessageBox(shell, style);
 					box.setMessage("Exit the application?");
+					// Handle event if OK pressed.
 					event.doit = box.open() == SWT.OK;
 				}
 	            else
 	            {
+	            	// Print error message if simulation is still running.
 	            	ErrorPrint.PrintError("Please stop simulation before exiting.");
+	            	event.doit=false;
 	            }
 	        }
 	    };
+	    // Add created listener to Display.
 	    display.addListener(SWT.Close, listener1);
+	    // Add dispose listener to display.
 	    display.addListener(SWT.Dispose, new Listener() 
 	    {
 	        public void handleEvent(Event event) {}
 	    });
+	    // Add created listener to Shell.
 	    shell.addListener(SWT.Close, listener1);
+	    // Add dispose listener to shell.
 	    shell.addListener(SWT.Dispose, new Listener() 
 	    {
 	        public void handleEvent(Event event){}
 	    });
+	    // Open Shell.
 	    shell.open();
+	    // Create and run a new TimerTask to redraw canvas every 1 second.
 	    Timer timer=new Timer();
-	    timer.schedule(new TimerTask(){
-	    	public void run() {
-	    		if(!shell.isDisposed()){
-	    			display.asyncExec(new Runnable(){
+	    timer.schedule(new TimerTask()
+		{
+	    	// Implement run method.
+			public void run()
+			{
+				// Check shell is not disposed.
+				if (!shell.isDisposed())
+				{
+					// Create new Runnable - Synchronized with display.
+					display.asyncExec(new Runnable()
+					{
 						public void run()
 						{
-							if(!canvas.isDisposed())
+							// Check Canvas is not disposed, and redraw it.
+							if (!canvas.isDisposed())
 							{
 								canvas.redraw();
 								canvas.update();
 							}
 						}
-		    		});
-	    		}
-	    	}
-	    },1000,1000);
-	    Listener mouselistener = new Listener () {
+					});
+				}
+			}
+		}, 1000, 1000);
+	    
+	    // Create new Mouse Listener.
+	    Listener mouselistener = new Listener ()
+	    {
+	    	// local Robot pointer.
 			private Robot myRob;
-
-			public void handleEvent (Event event) {
-				int maxX = canvas.getSize().x;	// max size
+			public void handleEvent(Event event)
+			{
+				int maxX = canvas.getSize().x; // max size
 				int maxY = canvas.getSize().y;
-				int mx=maxX/2,my=maxY/2;	// mid point as (0,0)
-				switch (event.type) {
-					case SWT.MouseDown:
-						for(int i=0;i<sim.GetSize();i++)
+				int mx = maxX / 2, my = maxY / 2; // mid point as (0,0)
+				switch (event.type)
+				{
+				case SWT.MouseDown:
+					for (int i = 0; i < sim.GetSize(); i++)
+					{
+						Position pos = new Position(sim.robList.get(i)
+								.getCurrentPosition());
+						if (isInArea(event.x, event.y, my - pos.y, pos.x + mx)
+								&& !simIsRunning)
 						{
-							Position pos=new Position(sim.robList.get(i).getCurrentPosition());
-							if(isInArea(event.x,event.y,my-pos.y,pos.x+mx) && !simIsRunning)
-							{
-								myRob=sim.robList.get(i);
-							}
+							myRob = sim.robList.get(i);
 						}
-						break;
-					case SWT.MouseMove:
-						if(myRob!=null)
-						{
-							myRob.setPosition(new Position(event.x-mx,my-event.y));
-							canvas.redraw();
-							canvas.update();
-						}
-						break;
-					case SWT.MouseUp:
-						myRob=null;
-						break;
+					}
+					break;
+				case SWT.MouseMove:
+					if (myRob != null)
+					{
+						myRob.setPosition(new Position(event.x - mx, my
+								- event.y));
+						canvas.redraw();
+						canvas.update();
+					}
+					break;
+				case SWT.MouseUp:
+					myRob = null;
+					break;
 				}
 			}
 
 			private boolean isInArea(int x, int y, int curry, int currx)
 			{
 				// Get deficits between current coordinates, and starting ones.
-				double distX=x-currx;
-				double distY=y-curry;
+				double distX = x - currx;
+				double distY = y - curry;
 				// Calculate distance moved.
-				if(Math.sqrt(Math.pow(distX, 2)+Math.pow(distY, 2))<=8) return true;
+				if (Math.sqrt(Math.pow(distX, 2) + Math.pow(distY, 2)) <= 8)
+					return true;
 				return false;
 			}
 		};
@@ -397,6 +429,6 @@ public class GUI {
 	    }
 	    display.dispose();
 	    timer.cancel();
-	    programs.shutDown();
+	    progs.shutDown();
 	}
 }

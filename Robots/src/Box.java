@@ -10,8 +10,8 @@ public class Box
 	private Position location;
 	public boolean isPicked;
 	/**
-	 *  Constructor
-	 * Description: 
+	 * Box Constructor
+	 * Description: Constructs a box object with given name. 
 	 */
 	public Box(String bname)
 	{
@@ -20,7 +20,7 @@ public class Box
 	}
 	public void SetPosition(Position pos)
 	{
-		location=pos;
+		location=new Position(pos);
 	}
 	public Position getPosition()
 	{
