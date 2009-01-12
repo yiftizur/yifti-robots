@@ -54,6 +54,14 @@ public class Simulation
 	{
 		return nameMap.values();
 	}
+	
+	/**
+	 * Method: GetSize
+	 * Returns: int
+	 * @return
+	 * Description: Return size of simulation.
+	 */
+	
 	public int GetSize()
 	{
 		return robList.size();

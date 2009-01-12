@@ -6,6 +6,7 @@ import org.eclipse.swt.events.PaintEvent;
  **/
 public interface Robot extends Comparable<Robot>
 {
+	// All basic robot methods.
 	public void setStartingPosition(Position p);
 	public void setPosition(Position pos);
 	public void move(int speed,int heading);

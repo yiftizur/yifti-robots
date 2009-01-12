@@ -4,6 +4,11 @@ import org.junit.Test;
 import junit.framework.TestCase;
 
 
+/**
+ * SmartRobotTest Class
+ * Junit Class for testing the SmartRobot decorator.
+ * tests for new smarter heading adjustments.
+ */
 public class SmartRobotTest extends TestCase
 {
 	private SmartRobot rob;
@@ -61,7 +66,8 @@ public class SmartRobotTest extends TestCase
 		rob.act();
 		// Verify robot took one step in correct direction.
 		assertEquals("3,9", rob.getCurrentPosition().toString());
-		// Move robot several steps.
+		// Move robot several steps:
+		
 		rob.act();
 		// Verify Robot adjusts direction with each movement.
 		assertEquals("3,19", rob.getCurrentPosition().toString());

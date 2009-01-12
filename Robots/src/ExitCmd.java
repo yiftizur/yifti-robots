@@ -1,13 +1,18 @@
 import org.eclipse.swt.widgets.Shell;
 
+/**
+ * ExitCmd Class.
+ * Implementation of the GCommand interface - the Exit command for exiting program.
+ */
+
 public class ExitCmd implements GCommand
 {
-
+	// Local shell.
 	private Shell shell;
 
 	/**
-	 * @param shell Constructor
-	 * Description: 
+	 * ExitCmd Constructor
+	 * Description: creates new object with provided shell.
 	 */
 	public ExitCmd(Shell shell)
 	{
@@ -17,8 +22,8 @@ public class ExitCmd implements GCommand
 	/**
 	 * Method: execute
 	 * Overrides: @see GCommand#execute()
-	 * Returns: 
-	 * Description:
+	 * Returns: None
+	 * Description: Runs the Exit command - closes the shell.
 	 */
 	@Override
 	public void execute()

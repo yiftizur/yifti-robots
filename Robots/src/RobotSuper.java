@@ -212,27 +212,56 @@ public class RobotSuper implements Robot
 		// Calculate distance moved.
 		return (Math.sqrt(Math.pow(distX, 2)+Math.pow(distY, 2)));
 	}
-	/* (non-Javadoc)
-	 * @see Robot#pickupBox()
+	
+	/**
+	 * Method: pickupBox
+	 * Overrides: @see Robot#pickupBox(Box)
+	 * Returns: false
+	 * Description: Returns result of pickupBox -  returns false as Basic robot
+	 * has no arm.
 	 */
-	@Override
+	
 	public boolean pickupBox(Box b)
 	{
 		return false;
 	}
-	/* (non-Javadoc)
-	 * @see Robot#putdownBox()
+	
+	/**
+	 * Method: putdownBox
+	 * Overrides: @see Robot#putdownBox()
+	 * Returns: false.
+	 * Description: Returns result of putdownBox -  returns false as Basic robot
+	 * has no arm.
 	 */
-	@Override
+	
 	public boolean putdownBox()
 	{
 		return false;
 	}
+	
+	/**
+	 * Method: SetProgram
+	 * Overrides: @see Robot#SetProgram(java.lang.String)
+	 * Returns: None
+	 * Description: Sets program for robot to run.
+	 */
+	
 	public void SetProgram(String filename)
 	{
+		// Read program file into robots local map.
 		ReadFile(filename);
+		// Set robot's program name to file name.
 		fName=filename;
 	}
+	
+	/**
+	 * Method: paint
+	 * Overrides: @see Robot#paint(org.eclipse.swt.events.PaintEvent)
+	 * Returns: None.
+	 * Description: Implements the Paint method. 
+	 * For painting the Robot on the provided canvas.
+	 */
+	
 	public void paint(PaintEvent e)
 	{
 		double deg=GetDeg(heading);
@@ -257,15 +286,27 @@ public class RobotSuper implements Robot
 		e.gc.drawString(this.getClass().toString().split(" ")[1],myX+13, myY,true);
 		e.gc.drawString("("+current.x+","+current.y+")",myX+13, myY+13,true);
 	}
+	
+	/**
+	 * Method: ReadFile
+	 * Returns: void
+	 * @param program
+	 * Description: Reads provided program file into local hashmap.
+	 * Stores each command in file with its time as the key.
+	 */
+	
 	public void ReadFile(String program)
 	{
 		try
 		{
+			// Use buffered reader for getting each line from file.
 			BufferedReader br = new BufferedReader(new FileReader(
 					program));
 			String line = br.readLine();
+			// Continue while there are still lines to read.
 			while (line != null)
 			{
+				// Put line in hashmap with its time as the key.
 				lines.put(Integer.parseInt(line.split(" ")[0]), line);
 				line = br.readLine();
 			}
@@ -275,14 +316,25 @@ public class RobotSuper implements Robot
 			e.printStackTrace();
 		}
 	}
+	
+	/**
+	 * Method: GetLine
+	 * Overrides: @see Robot#GetLine(int)
+	 * Returns: String
+	 * Description: Returns line by index from robots program command hashmap.
+	 */
+	
 	public String GetLine(int index)
 	{
 		return lines.get(index);		
 	}
-	/* (non-Javadoc)
-	 * @see Robot#setPosition(Position)
+	
+	/**
+	 * Method: setPosition
+	 * Overrides: @see Robot#setPosition(Position)
+	 * Returns: None.
+	 * Description: Set robot's position with provided one.
 	 */
-	@Override
 	public void setPosition(Position pos)
 	{
 		current=pos;		

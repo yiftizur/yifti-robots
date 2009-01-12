@@ -1,19 +1,17 @@
 /**
- * 
+ * StpSimCmd Class.
+ * Implementation of the GCommand interface - the Stop Simulation command for 
+ * Stopping the Simulation for all robots.
  */
 
-/**
- * @author Administrator
- *
- */
 public class StpSimCmd implements GCommand
 {
-
+	// Local programs variable.
 	private Programs progs;
 
 	/**
-	 * @param progs Constructor
-	 * Description: 
+	 * StpSimCmd Constructor
+	 * Description: Create new instance with given parameter.
 	 */
 	public StpSimCmd(Programs progs)
 	{
@@ -23,10 +21,10 @@ public class StpSimCmd implements GCommand
 	/**
 	 * Method: execute
 	 * Overrides: @see GCommand#execute()
-	 * Returns: 
-	 * Description:
+	 * Returns: None.
+	 * Description: Stops all running programs.
 	 */
-	@Override
+
 	public void execute()
 	{
 		progs.shutDown();

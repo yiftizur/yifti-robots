@@ -1,11 +1,9 @@
 /**
- * 
+ * StrtSimCmd Class.
+ * Implementation of the GCommand interface - the Start Simulation command for 
+ * Starting the Simulation for all robots.
  */
 
-/**
- * @author Administrator
- *
- */
 public class StrtSimCmd implements GCommand
 {
 
@@ -13,8 +11,8 @@ public class StrtSimCmd implements GCommand
 
 	/**
 	 * @param progs
-	 * @param b Constructor
-	 * Description: 
+	 * StrtSimCmd Constructor
+	 * Description: Creates a new instance with provided parameter.
 	 */
 	public StrtSimCmd(Programs progs)
 	{
@@ -24,10 +22,10 @@ public class StrtSimCmd implements GCommand
 	/**
 	 * Method: execute
 	 * Overrides: @see GCommand#execute()
-	 * Returns: 
-	 * Description:
+	 * Returns: None.
+	 * Description: Starts all programs for all assigned robots.
 	 */
-	@Override
+
 	public void execute()
 	{
 		progs.RunAll();

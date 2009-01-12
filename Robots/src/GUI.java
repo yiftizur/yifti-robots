@@ -1,6 +1,10 @@
+/*
+* Name - Yiftach Tzur
+* ID - 043372523
+* Group - 89-210-02
+*/
+
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -162,7 +166,7 @@ public class GUI {
 	    final Display display = new Display();
 	    final Shell shell = new Shell(display);
 	    // Init Static Error Printing class.
-	    ErrorPrint error=ErrorPrint.getInstance(shell);
+	    ErrorPrint.getInstance(shell);
 	    sim=new Simulation();
 		boxes=new Boxes();
 		progs=new Programs();
@@ -372,40 +376,64 @@ public class GUI {
 	    {
 	    	// local Robot pointer.
 			private Robot myRob;
+			
+			/**
+			 * Method: handleEvent
+			 * Overrides: @see org.eclipse.swt.widgets.Listener#handleEvent(org.eclipse.swt.widgets.Event)
+			 * Returns: None
+			 * Description: Handles sent event to listener.
+			 */
 			public void handleEvent(Event event)
 			{
 				int maxX = canvas.getSize().x; // max size
 				int maxY = canvas.getSize().y;
 				int mx = maxX / 2, my = maxY / 2; // mid point as (0,0)
+				// Switch case on event type.
 				switch (event.type)
 				{
+				// If event is mouse down.
 				case SWT.MouseDown:
+					// Go over all robots in simulation.
 					for (int i = 0; i < sim.GetSize(); i++)
 					{
+						// Get current robot position.
 						Position pos = new Position(sim.robList.get(i)
 								.getCurrentPosition());
+						// Check if mouse is clicked in Robots circle area.
 						if (isInArea(event.x, event.y, my - pos.y, pos.x + mx)
 								&& !simIsRunning)
 						{
+							// Set robot pointer to found robot.
 							myRob = sim.robList.get(i);
 						}
 					}
 					break;
+				// Case event is mouseMove.
 				case SWT.MouseMove:
+					// Check a robot was chosen.
 					if (myRob != null)
 					{
-						myRob.setPosition(new Position(event.x - mx, my
-								- event.y));
+						// Set Robot's location according to the mouse location.
+						myRob.setPosition(new Position(event.x-mx, my-event.y));
+						// Redraw and update the canvas.
 						canvas.redraw();
 						canvas.update();
 					}
 					break;
+				// Case event is mouseup
 				case SWT.MouseUp:
+					// Set robot pointer to null.
 					myRob = null;
 					break;
 				}
 			}
 
+			/**
+			 * Method: isInArea
+			 * Returns: boolean
+			 * Description: Returns true if distance between given coordinates is 8.
+			 */
+			
 			private boolean isInArea(int x, int y, int curry, int currx)
 			{
 				// Get deficits between current coordinates, and starting ones.
@@ -427,8 +455,11 @@ public class GUI {
 	        display.sleep();
 	      }
 	    }
-	    display.dispose();
-	    timer.cancel();
+	 // Make sure all threads of program are stopped.
 	    progs.shutDown();
+	    // Stop the canvas redraw timer.
+	    timer.cancel();
+	    // dispose of display.
+	    display.dispose();
 	}
 }
